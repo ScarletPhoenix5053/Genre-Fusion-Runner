@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
+using SCARLET.DbOverlay;
 
 public class ParkourPlayerController : MonoBehaviour
 {
@@ -16,19 +18,23 @@ public class ParkourPlayerController : MonoBehaviour
     [SerializeField] private float wallrunMinStartSpeed = 5f;
     [SerializeField] private float wallrunMinStaySpeed = 0f;
     [SerializeField] private float wallrunLeapBoost = 10f;
+    [SerializeField] private float wallrunAdjustTime = 0.5f;
 #pragma warning restore 0649
     #endregion
     #region Private Vars
     private IPlayerInput inputGroup;
     private CharacterState state = CharacterState.Normal;
 
+    private IEnumerator smoothTranslateRoutine;
+
+    private int wallDirection = 0;
     private WallRunDetector wallRunDetector;
 
     private int activeMotionIndex = 0;
     private const int groundMotionIndex = 0;
     private const int wallrunMotionIndex = 1;
 
-    private int wallDirection = 0;
+    private const string idCharState = "Character State";
     #endregion
     #region Properites
     public float Speed => motionControllers[activeMotionIndex].Speed;
@@ -55,6 +61,9 @@ public class ParkourPlayerController : MonoBehaviour
             wallRunDetector.OnNewWallDetected += StartWallrun;
             wallRunDetector.OnDetatchFromWall += EndWallRun;
         }
+
+        // Create overlay logs
+        DebugOverlay.CreateLog(idCharState);
     }
     private void Update()
     {
@@ -65,7 +74,9 @@ public class ParkourPlayerController : MonoBehaviour
 
             default: throw new System.NotImplementedException("Please impliment interactions for state: " + state.ToString());
         }
-        
+
+        // Update overlay
+        DebugOverlay.UpdateLog("Character State", state.ToString());
     }
     #endregion
 
@@ -114,11 +125,11 @@ public class ParkourPlayerController : MonoBehaviour
         var speed = motionControllers[groundMotionIndex].Speed;
 
         // If able to wallrun
-        if (motion.x != 0 && speed > wallrunMinStartSpeed)
+        if (!Grounded && speed > wallrunMinStartSpeed)
         {
             // Check for wall to run on
             var strafeSign = System.Math.Sign(motion.x);
-            wallRunDetector.CheckForWall(strafeSign);
+            wallRunDetector.CheckForWall();
         }
     }
     private void LoopWallrunState()
@@ -139,7 +150,7 @@ public class ParkourPlayerController : MonoBehaviour
         var jump = inputGroup.GetInputJump();
         if (jump)
         {
-            Debug.Log("Leaping from wall");
+            //Debug.Log("Leaping from wall");
             SetStateToNormal();
             LeapFromWallrun(speed);
             wallRunDetector.DetatchFromWall();
@@ -148,8 +159,8 @@ public class ParkourPlayerController : MonoBehaviour
         var crouch = inputGroup.GetInputCrouch();
         if (speed <= wallrunMinStaySpeed || crouch)
         {
-            if (crouch) Debug.Log("Crouch input: ending wallrun");
-            else Debug.Log("Too slow to maintain wallrun");
+            //if (crouch) Debug.Log("Crouch input: ending wallrun");
+            //else Debug.Log("Too slow to maintain wallrun");
             wallRunDetector.DetatchFromWall();
         }
     }
@@ -181,12 +192,16 @@ public class ParkourPlayerController : MonoBehaviour
         motionControllers[wallrunMotionIndex].enabled = true;
         motionControllers[groundMotionIndex].enabled = false;
 
-
-        // Find new pos & rotation to lock to
+        // Find new pos & rotation to interpolate to
         var newRotation = wallRunDetector.GetWallRunEulers();
         var newPosition = wallRunDetector.GetWallRunStartPos(capsuleCollider.radius);
         transform.eulerAngles = newRotation;
-        transform.position = newPosition;
+        //transform.position = newPosition;
+        
+        if (smoothTranslateRoutine != null) StopCoroutine(smoothTranslateRoutine);
+        smoothTranslateRoutine = SmoothTranslateXRoutine(to: newPosition);
+        StartCoroutine(smoothTranslateRoutine);
+        
 
         // Tilt cam
         cam.SetTilt(wallrunCamTilt * wallDirection);
@@ -201,7 +216,6 @@ public class ParkourPlayerController : MonoBehaviour
     }
     private void StartWallrun(BoxCollider newWallTransform, int side)
     {
-        Debug.Log("Wallrun on " + newWallTransform + ". Direction: " + side);
         wallDirection = side;
         SetStateToWallRun();
     }
@@ -210,6 +224,71 @@ public class ParkourPlayerController : MonoBehaviour
         //Debug.Log("Ending wallrun");
         wallDirection = 0;
         SetStateToNormal();
+    }
+
+
+    private IEnumerator SmoothTranslateXRoutine(Vector3 to)
+    {
+        var smoothCurrent = 0f;
+        var sign = 0;
+        var localizedTargetPos = transform.InverseTransformPoint(to);
+        if (localizedTargetPos.x  <= 0)
+        {
+            sign = -1;
+        }
+        else
+        {
+            sign = 1;
+        }
+        var linearIncriment = Vector3.Distance(to, transform.position) * (wallrunAdjustTime *  Time.fixedDeltaTime);
+
+        while (smoothCurrent < wallrunAdjustTime)
+        {
+            smoothCurrent += wallrunAdjustTime * Time.deltaTime;
+            
+            
+            var interpolatedPos =
+                transform.TransformDirection(
+                    new Vector3(
+                        linearIncriment * sign,
+                        0,
+                        0
+                        ));
+
+            /*
+            var interpolatedPos =
+                    new Vector3(
+                        linearIncriment * sign,
+                        0,
+                        0
+                        );*/
+
+            transform.position += interpolatedPos;
+            yield return new WaitForFixedUpdate();
+        }
+    }
+    private IEnumerator SmoothRotateRoutine()
+    {
+        throw new System.NotImplementedException();
+        /*
+        tiltSmoothCurrent = 0;
+        prevRotation = transform.rotation;
+        targetRotation = Quaternion.Euler(Vector3.forward * targetAngle);
+
+        while (tiltSmoothCurrent < tiltSmoothTime)
+        {
+            tiltSmoothCurrent += tiltSmoothTime * Time.deltaTime;
+
+            var interpolatedRotation =
+                Quaternion.Slerp(
+                    transform.rotation,
+                    targetRotation,
+                    tiltSmoothCurrent / tiltSmoothTime
+                    );
+
+            currentRotation = interpolatedRotation.eulerAngles;
+            yield return new WaitForEndOfFrame();
+        }*/
     }
     #endregion
 }

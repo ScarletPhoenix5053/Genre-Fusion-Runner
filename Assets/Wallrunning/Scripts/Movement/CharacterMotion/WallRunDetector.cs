@@ -28,7 +28,12 @@ public class WallRunDetector : MonoBehaviour
 
         // Draw line to side of player
         Gizmos.color = Color.yellow;
-        Gizmos.DrawRay(transform.position, transform.right * wallCheckDir * wallCheckDistance);
+        if (wallCheckDir == 0)
+        {
+            Gizmos.DrawRay(transform.position, transform.right * -1 * wallCheckDistance);
+            Gizmos.DrawRay(transform.position, transform.right * 1 * wallCheckDistance);
+        }
+        else Gizmos.DrawRay(transform.position, transform.right * wallCheckDir * wallCheckDistance);
 
         if (currentWall != null)
         {
@@ -57,68 +62,73 @@ public class WallRunDetector : MonoBehaviour
         prevWall = null;
     }
 
+    /// <summary>
+    /// Checks for and evaluates walls in both directions.
+    /// Attatches to the closest one if not already on a wall.
+    /// </summary>
+    public void CheckForWall()
+    {
+        drawGizmo = true;
+        if (currentWall != null) return;        
+
+        // Check left
+        wallCheckDir = -1;
+        var wallLeft = CheckForNewWall();
+
+        // Check right
+        wallCheckDir = 1;
+        var wallRight = CheckForNewWall();
+
+        // Evaluate walls if two are found
+        if (wallLeft != null && wallRight != null)
+        {
+            throw new NotImplementedException("Method CheckForWall() has not implimented resolution for finding two walls");
+        }
+        // Attatch to wall if only one found
+        else if (wallLeft != null)
+        {
+            wallCheckDir = -1;
+            SetCurrentWallTo(wallLeft);
+        }
+        else if (wallRight != null)
+        {
+            wallCheckDir = 1;
+            SetCurrentWallTo(wallRight);
+        }
+        // Return if none are found
+        else
+        {
+            wallCheckDir = 0;
+            return;
+        }
+
+
+    }
+    /// <summary>
+    /// Checks for a wall in the specified direction. Throws exception if sign is 0.
+    /// </summary>
+    /// <param name="direction"></param>
     public void CheckForWall(int direction)
     {
         drawGizmo = true;
+        BoxCollider newWall = null;
 
         // Validate sign
-        if (direction == 0) throw new InvalidSignException();
-        direction = Math.Sign(direction);
+        if (SignIsNotValid(direction)) throw new InvalidSignException();
+        else wallCheckDir = Math.Sign(direction);
 
-        // Store check direction
-        wallCheckDir = direction;
-
-        // If already on a wall
-        if (currentWall != null)
+        // If not on a wall
+        if (currentWall == null)
         {
-            RaycastHit hit;
-            var detected = RaycastForCollider(direction, out hit);
-
-            // If no wall or a different wall is detected
-            if (!detected || currentWall != hit.collider)
-            {
-                // Detatch
-                DetatchFromWall();
-            }
+            // Check for new wall
+            newWall = CheckForNewWall();
+            if (newWall != null) SetCurrentWallTo(newWall);
         }
-        // Else begin checking for new wall
         else
         {
-            // Check for any collision to set direction
-            RaycastHit hit;
-            var detected = RaycastForCollider(direction, out hit);
-
-            if (detected)
-            {
-
-                // Check if boxcollider            
-                var detectedTransform = hit.transform;
-                var detectedWall = hit.collider as BoxCollider;
-                if (detectedWall == null)
-                {
-                    return;
-                }
-
-                // Check if is current wall
-                if (currentWall == detectedWall)
-                {
-                    return;
-                }
-
-                // Check if previous wall
-                if (prevWall == detectedWall)
-                {
-                    return;
-                }
-
-                // Check normal of collision
-
-                // Set to current wall transform
-                prevWall = currentWall;
-                currentWall = detectedWall;
-                OnNewWallDetected?.Invoke(currentWall, direction);
-            }
+            CheckForNewWallOnWallEnd();
         }
+
     }
     public Vector3 GetWallRunEulers()
     {
@@ -173,6 +183,68 @@ public class WallRunDetector : MonoBehaviour
         // Calculate
         var dirToNewCentre = dirBetweenPoints * wallOffset;
         return closestPointOnCol + dirToNewCentre;
+    }
+
+    private bool SignIsNotValid(int sign) => sign == 0;
+
+    private void CheckForNewWallOnWallEnd()
+    {
+        RaycastHit hit;
+        BoxCollider newWall = null;
+        var detected = RaycastForCollider(wallCheckDir, out hit);
+
+        // If no wall or a different wall is detected
+        if (!detected || currentWall != hit.collider)
+        {
+            newWall = CheckForNewWall();
+            if (newWall != null) SetCurrentWallTo(newWall);
+            else DetatchFromWall();
+
+        }
+    }
+    private void DetatchOnWallEnd()
+    {
+        RaycastHit hit;
+        var detected = RaycastForCollider(wallCheckDir, out hit);
+
+        // If no wall or a different wall is detected
+        if (!detected || currentWall != hit.collider)
+        {
+            // Detatch
+            DetatchFromWall();
+        }
+    }
+    private BoxCollider CheckForNewWall()
+    {
+        // Check for any collision to set direction
+        RaycastHit hit;
+        var detected = RaycastForCollider(wallCheckDir, out hit);
+
+        if (detected)
+        {
+            // Validate collider
+            var detectedWall = hit.collider as BoxCollider;
+            if (
+                detectedWall == null ||
+                // Ensure is not same or prev collider
+                currentWall == detectedWall ||
+                prevWall == detectedWall
+                )
+                return null;
+
+            // Check normal of collision
+
+            return detectedWall;
+        }
+
+        return null; // if nothing found
+    }
+    private void SetCurrentWallTo(BoxCollider newWall)
+    {
+        // Set to current wall transform
+        prevWall = currentWall;
+        currentWall = newWall;
+        OnNewWallDetected?.Invoke(currentWall, wallCheckDir);
     }
 
     private bool WallIsNull()

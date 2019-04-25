@@ -53,7 +53,6 @@ public class GroundChecker : MonoBehaviour
     #region Unity Messages
     private void OnDrawGizmos()
     {
-
         Gizmos.color = Color.cyan;
         Gizmos.DrawWireSphere(MainTransform.TransformPoint(surfaceCheckPoint), surfaceSphereCastRadius);
 

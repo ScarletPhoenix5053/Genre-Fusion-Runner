@@ -46,7 +46,7 @@ public class KBMInputGroup : IPlayerInput
         }
     }
     #endregion
-
+    
     #region Methods
     public Vector2 GetAxisMotion()
     {

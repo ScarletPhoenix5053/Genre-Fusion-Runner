@@ -84,7 +84,6 @@ public class AcceleratingCharacterMotionController : BaseMotionController
     public override void MoveHorizontal(Vector2 input)
     {
         if (input == Vector2.zero) return;
-        Debug.Log(input);
 
         var maxFwdSpeed = moveSpeed * (sprint ? sprintMultiplier : 1);
 
