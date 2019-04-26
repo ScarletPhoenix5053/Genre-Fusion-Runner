@@ -101,9 +101,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3526873121276352360}
+  - component: {fileID: 5835384863734160828}
   - component: {fileID: 3526873121276352361}
   - component: {fileID: 3526873121276352356}
   - component: {fileID: 3526873121276352357}
+  - component: {fileID: 1037426966737646628}
   - component: {fileID: 3526873121276352363}
   - component: {fileID: 3526873121276352364}
   - component: {fileID: 3526873121276352365}
@@ -131,6 +133,22 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5835384863734160828
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3526873121276352366}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f59708030afab7644b425eeb13c17ad7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Cam: {fileID: 0}
+  MotionControllerNormal: {fileID: 3526873121276352356}
+  MotionControllerWallrun: {fileID: 3526873121276352357}
+  MotionControllerSlide: {fileID: 1037426966737646628}
 --- !u!114 &3526873121276352361
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -144,16 +162,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   preferences: {fileID: 11400000, guid: 810ac792cdb4d2d4083bd6327b515dca, type: 2}
-  cam: {fileID: 0}
   gravityChecker: {fileID: 0}
-  motionControllers:
-  - {fileID: 3526873121276352356}
-  - {fileID: 3526873121276352357}
   capsuleCollider: {fileID: 3526873120542887154}
   wallrunCamTilt: 10
   wallrunMinStartSpeed: 5
   wallrunMinStaySpeed: 2
   wallrunLeapBoost: 18
+  wallrunAdjustTime: 0.5
 --- !u!114 &3526873121276352356
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -195,6 +210,23 @@ MonoBehaviour:
   wallrunMaxSpeed: 15
   acceleration: 0.3
   deceleration: 0.335
+--- !u!114 &1037426966737646628
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3526873121276352366}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9876b82f8865a534584cb96bf206497b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  translator: {fileID: 3526873121276352363}
+  slideSpeed: 12
+  friction: 0.2
+  strafeStrength: 0.3
+  strafeMaxSpeed: 3
 --- !u!114 &3526873121276352363
 MonoBehaviour:
   m_ObjectHideFlags: 0

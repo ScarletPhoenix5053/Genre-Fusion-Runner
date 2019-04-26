@@ -3,74 +3,28 @@ using System.Collections;
 using System.Collections.Generic;
 using SCARLET.DbOverlay;
 
+[RequireComponent(typeof(PlayerRefs))]
 public class ParkourPlayerController : MonoBehaviour
 {
-    #region Inspector
-#pragma warning disable 0649
-    [Header("Refrences")]
-    [SerializeField] private PlayerPreferenceGroup preferences;
-    [SerializeField] private CameraController cam;
-    [SerializeField] private GroundChecker gravityChecker;
-    [SerializeField] private List<BaseMotionController> motionControllers = new List<BaseMotionController>();
-    [SerializeField] private CapsuleCollider capsuleCollider;
-    [Header("Wallrun Settings")]
-    [SerializeField] private float wallrunCamTilt = 5f;
-    [SerializeField] private float wallrunMinStartSpeed = 5f;
-    [SerializeField] private float wallrunMinStaySpeed = 0f;
-    [SerializeField] private float wallrunLeapBoost = 10f;
-    [SerializeField] private float wallrunAdjustTime = 0.5f;
-#pragma warning restore 0649
-    #endregion
-    #region Private Vars
-    private IPlayerInput inputGroup;
-    private CharacterState state = CharacterState.Normal;
-
-    private IEnumerator smoothTranslateRoutine;
-
-    private int wallDirection = 0;
-    private WallRunDetector wallRunDetector;
-
-    private int activeMotionIndex = 0;
-    private const int groundMotionIndex = 0;
-    private const int wallrunMotionIndex = 1;
-
-    private const string idCharState = "Character State";
-    #endregion
-    #region Properites
-    public float Speed => motionControllers[activeMotionIndex].Speed;
-    protected bool Grounded => gravityChecker.Grounded;
-    #endregion
-
-    #region Unity Messages
-    private void Reset()
-    {
-        AssignRefrences();
-    }
+    #region Flow
     private void Awake()
     {
-        AssignRefrences();
-
-        // Create objects and inject dependencies
-        inputGroup = new KBMInputGroup(preferences);
-
-        // Subscribe to wallrundetector
-        wallRunDetector = GetComponent<WallRunDetector>();
-        if (wallRunDetector == null) Debug.LogWarning("Cannot find a wallrun detector, movement may not work as intended", this);
-        else
-        {
-            wallRunDetector.OnNewWallDetected += StartWallrun;
-            wallRunDetector.OnDetatchFromWall += EndWallRun;
-        }
-
-        // Create overlay logs
-        DebugOverlay.CreateLog(idCharState);
+        GetRefComponent();
+        CreateObjectsAndInjectDependencies();
+        SubscribeToWallrunDetector();
+        CreateOverlayLogs();
     }
     private void Update()
     {
+        // Create generic motion interface for each state
+        // motion controllers handle juggling of control between themselves?
+        // PlayerControl > Motion Control Handler > Indv motion controllers > Translator ????
+
         switch (state)
         {
             case CharacterState.Normal: LoopNormalState(); break;
-            case CharacterState.Wallrunning: LoopWallrunState(); break;
+            case CharacterState.Wallrun: LoopWallrunState(); break;
+            case CharacterState.Slide: LoopSlideState(); break;
 
             default: throw new System.NotImplementedException("Please impliment interactions for state: " + state.ToString());
         }
@@ -80,24 +34,78 @@ public class ParkourPlayerController : MonoBehaviour
     }
     #endregion
 
-    #region Methods
-    private void AssignRefrences()
+    /*  PROBLEM AREAS:
+     *  
+     *  Momentum - momentum needs to carry accross between motion controllers and translator
+     *      Force-based translator?
+     *      
+     *      PLAYER CONTROLLER
+     *          \ 
+     *          MOTION CONTROLLERS
+     *              \
+     *              FORCE-BASED TRANSLATOR
+     *                  \
+     *                  TRANSFORM.POSITION
+     *      
+     *  Individual state control - simplifty interface with motion controllers
+     *  Motion controller and player sates operate wtih similar enums
+     *  
+     *  Extensive wallrun code - separate into wallrun classes or make new ones
+     */
+
+    #region Cam
+    private void UpdateCam()
     {
-        // Prefs
-        if (preferences == null) Debug.LogError("Cannot find player prefrences: unable to complete validataion.", this);
+        var look = inputGroup.GetAxisLook();
+        refs.Cam.Turn(look);
+    }
+    private void TiltCam(float angle) => refs.Cam.SetTilt(angle);
+    private void CamControlsRotation(bool value) => refs.Cam.ControlTargetRotation = value;
+    #endregion
+    #region State Control
+    private void TrySlide(bool crouch)
+    {
 
-        // Camera
-        if (cam == null)
+        // If running and holding crouch
+        var minSlideSpeed = wallrunMinStartSpeed;
+        if (Grounded && Speed > minSlideSpeed && crouch)
         {
-            if (!(Camera.main != null && (cam = Camera.main.GetComponent<CameraController>())))
-            Debug.LogError("Cannot find camera: unable to complete validataion.", this);
+            // Slide!
+            SetStateToSlide();
         }
+    }
+    private void TryWallRun()
+    {
 
-        // Gravity
-        if (gravityChecker == null) gravityChecker = Helper.FindRelevantComponent<GroundChecker>(transform);
+        // If able to wallrun
+        if (!Grounded && Speed > wallrunMinStartSpeed)
+        {
+            // Check for wall to run on
+            wallRunDetector.CheckForWall();
+        }
+    }
+    private void TryNormalMotion(Vector2 motion, bool sprint, bool jump)
+    {
+        motionControllers.ActiveMotionController.Sprint(sprint);
+        if (jump && Grounded) motionControllers.ActiveMotionController.Jump();
+        motionControllers.ActiveMotionController.MoveHorizontal(motion);
+    }
+    private void SetStateToSlide()
+    {
+        SetState(CharacterState.Slide);
+        motionControllers.SetActiveMotionController(CharacterState.Slide);
 
-        // Colliders
-        if (capsuleCollider == null) capsuleCollider = Helper.FindRelevantComponent<CapsuleCollider>(transform);
+        CamControlsRotation(false);
+    }
+    private void SetStateToWallRun()
+    {
+        SetState(CharacterState.Wallrun);
+        motionControllers.SetActiveMotionController(CharacterState.Wallrun);
+
+        // Find new pos & rotation to interpolate to
+        SmoothStickToWall();
+
+        CamControlsRotation(false);
     }
     private void SetState(CharacterState newState)
     {
@@ -105,46 +113,74 @@ public class ParkourPlayerController : MonoBehaviour
 
         state = newState;
     }
-
-    private void LoopNormalState()
+    private void SetStateToNormal()
     {
-        UpdateCam();
+        SetState(CharacterState.Normal);
+        motionControllers.SetActiveMotionController(CharacterState.Normal);
 
-        // Allow use of previously touched wall once grounded
-        if (Grounded) wallRunDetector.RestorePrevWall();
-
-        // Base Move
+        CamControlsRotation(true);
+    }
+    private CharacterState state = CharacterState.Normal;
+    private PlayerMotionControl motionControllers;
+    #endregion
+    #region Normal Motion
+    private void MoveAsNormal()
+    {
         var motion = inputGroup.GetAxisMotion();
         var sprint = inputGroup.GetInputSprint();
         var jump = inputGroup.GetInputJump();
+        var crouch = inputGroup.GetInputCrouch();
+        TryNormalMotion(motion, sprint, jump);
+        TryWallRun();
+        TrySlide(crouch);
+    }
+    private void LoopNormalState()
+    {
+        UpdateCam();
+        AllowRunningOnPrevWall();
+        MoveAsNormal();
+    }
+    public float Speed => motionControllers.ActiveMotionController.Speed;
+    protected bool Grounded => refs.GroundChecker.Grounded;
+    #endregion
+    #region Wallrunning
+    private void EndWallRun()
+    {
+        //Debug.Log("Ending wallrun");
+        wallDirection = 0;
+        SetStateToNormal();
 
-        motionControllers[groundMotionIndex].Sprint(sprint);
-        if (jump && Grounded) motionControllers[groundMotionIndex].Jump();
-        motionControllers[groundMotionIndex].MoveHorizontal(motion);
-
-        var speed = motionControllers[groundMotionIndex].Speed;
-
-        // If able to wallrun
-        if (!Grounded && speed > wallrunMinStartSpeed)
-        {
-            // Check for wall to run on
-            var strafeSign = System.Math.Sign(motion.x);
-            wallRunDetector.CheckForWall();
-        }
+        TiltCam(0);
     }
     private void LoopWallrunState()
     {
-        // Check if still on wall
-        wallRunDetector.CheckForWall(wallDirection);
-
-        // Cam
+        CheckIfStillOnWall();
         UpdateCam();
+        MoveAsWallrunning();
+    }
+    private void MoveAsWallrunning()
+    {
+        var motion = inputGroup.GetAxisMotion();
+        motionControllers.ActiveMotionController.MoveHorizontal(motion);
 
-        // Move using wallrun controller
-        var motion = inputGroup.GetAxisMotion();        
-        motionControllers[wallrunMotionIndex].MoveHorizontal(motion);
+        var speed = motionControllers.ActiveMotionController.Speed;
+        TryWallJump(speed);
+        DetatchIfTooSlowOrCrouching(speed);
+    }
+    private void DetatchIfTooSlowOrCrouching(float speed)
+    {
 
-        var speed = motionControllers[wallrunMotionIndex].Speed;
+        // Detatch if too slow or crouching
+        var crouch = inputGroup.GetInputCrouch();
+        if (speed <= wallrunMinStaySpeed || crouch)
+        {
+            //if (crouch) Debug.Log("Crouch input: ending wallrun");
+            //else Debug.Log("Too slow to maintain wallrun");
+            wallRunDetector.DetatchFromWall();
+        }
+    }
+    private void TryWallJump(float speed)
+    {
 
         // Leap off of wall if jump input
         var jump = inputGroup.GetInputJump();
@@ -155,84 +191,66 @@ public class ParkourPlayerController : MonoBehaviour
             LeapFromWallrun(speed);
             wallRunDetector.DetatchFromWall();
         }
-        // Detatch if too slow or crouching
-        var crouch = inputGroup.GetInputCrouch();
-        if (speed <= wallrunMinStaySpeed || crouch)
+    }
+    private void CheckIfStillOnWall()
+    {
+        wallRunDetector.CheckForWall(wallDirection);
+    }
+    private void AllowRunningOnPrevWall()
+    {
+        if (Grounded) wallRunDetector.RestorePrevWall();
+    }
+    [Header("Wallrun Settings")]
+    // New class for handling tilt & wallrun adjustments
+    [SerializeField] private float wallrunCamTilt = 5f;
+    [SerializeField] private float wallrunMinStartSpeed = 5f;
+    [SerializeField] private float wallrunMinStaySpeed = 0f;
+    [SerializeField] private float wallrunLeapBoost = 10f;
+    [SerializeField] private float wallrunAdjustTime = 0.5f;
+
+    private IEnumerator smoothTranslateRoutine;
+    private int wallDirection = 0;
+    private WallRunDetector wallRunDetector;
+
+    private void SubscribeToWallrunDetector()
+    {
+        wallRunDetector = GetComponent<WallRunDetector>();
+        if (wallRunDetector == null) Debug.LogWarning("Cannot find a wallrun detector, movement may not work as intended", this);
+        else
         {
-            //if (crouch) Debug.Log("Crouch input: ending wallrun");
-            //else Debug.Log("Too slow to maintain wallrun");
-            wallRunDetector.DetatchFromWall();
+            wallRunDetector.OnNewWallDetected += StartWallrun;
+            wallRunDetector.OnDetatchFromWall += EndWallRun;
         }
     }
-
-    private void LeapFromWallrun(float fwdSpeed)
+    private void SmoothStickToWall()
     {
-       // var lateralBoost = new Vector2(wallrunLeapBoost * -wallDirection, fwdSpeed);
-        var lateralBoost = new Vector2(0, wallrunLeapBoost);
-        motionControllers[groundMotionIndex].Jump(lateralBoost);
-    }
-    private void SetStateToNormal()
-    {
-        SetState(CharacterState.Normal);
-        cam.ControlTargetRotation = true;
-        motionControllers[groundMotionIndex].enabled = true;
-        motionControllers[wallrunMotionIndex].enabled = false;
-        activeMotionIndex = groundMotionIndex;
-
-        // Un-tilt cam
-        cam.SetTilt(0);
-
-    }
-    private void SetStateToWallRun()
-    {
-        activeMotionIndex = wallrunMotionIndex;
-
-        SetState(CharacterState.Wallrunning);
-        cam.ControlTargetRotation = false;
-        motionControllers[wallrunMotionIndex].enabled = true;
-        motionControllers[groundMotionIndex].enabled = false;
-
-        // Find new pos & rotation to interpolate to
         var newRotation = wallRunDetector.GetWallRunEulers();
-        var newPosition = wallRunDetector.GetWallRunStartPos(capsuleCollider.radius);
+        var newPosition = wallRunDetector.GetWallRunStartPos(refs.MainCollider.radius);
         transform.eulerAngles = newRotation;
-        //transform.position = newPosition;
-        
+
         if (smoothTranslateRoutine != null) StopCoroutine(smoothTranslateRoutine);
         smoothTranslateRoutine = SmoothTranslateXRoutine(to: newPosition);
         StartCoroutine(smoothTranslateRoutine);
-        
-
-        // Tilt cam
-        cam.SetTilt(wallrunCamTilt * wallDirection);
-    }
-
-    private void UpdateCam()
-    {
-        // Camera
-        // postponing fix untill I update script
-        var look = inputGroup.GetAxisLook();
-        cam.Turn(look);
     }
     private void StartWallrun(BoxCollider newWallTransform, int side)
     {
         wallDirection = side;
         SetStateToWallRun();
+
+        TiltCam(wallrunCamTilt * wallDirection);
     }
-    private void EndWallRun()
+    private void LeapFromWallrun(float fwdSpeed)
     {
-        //Debug.Log("Ending wallrun");
-        wallDirection = 0;
-        SetStateToNormal();
+        // var lateralBoost = new Vector2(wallrunLeapBoost * -wallDirection, fwdSpeed);
+        var lateralBoost = new Vector2(0, wallrunLeapBoost);
+        motionControllers.ActiveMotionController.Jump(lateralBoost);
     }
-
-
     private IEnumerator SmoothTranslateXRoutine(Vector3 to)
     {
         var smoothCurrent = 0f;
         var sign = 0;
         var localizedTargetPos = transform.InverseTransformPoint(to);
-        if (localizedTargetPos.x  <= 0)
+        if (localizedTargetPos.x <= 0)
         {
             sign = -1;
         }
@@ -240,13 +258,13 @@ public class ParkourPlayerController : MonoBehaviour
         {
             sign = 1;
         }
-        var linearIncriment = Vector3.Distance(to, transform.position) * (wallrunAdjustTime *  Time.fixedDeltaTime);
+        var linearIncriment = Vector3.Distance(to, transform.position) * (wallrunAdjustTime * Time.fixedDeltaTime);
 
         while (smoothCurrent < wallrunAdjustTime)
         {
             smoothCurrent += wallrunAdjustTime * Time.deltaTime;
-            
-            
+
+
             var interpolatedPos =
                 transform.TransformDirection(
                     new Vector3(
@@ -291,11 +309,76 @@ public class ParkourPlayerController : MonoBehaviour
         }*/
     }
     #endregion
+    #region Sliding 
+    private void LoopSlideState()
+    {
+        UpdateCam();
+        MoveAsSliding();
+    }
+    private void MoveAsSliding()
+    {
+        var motion = inputGroup.GetAxisMotion();
+        var jump = inputGroup.GetInputJump();
+        TryStrafe(motion);
+        TryJumpFromSlide(jump);
+        EndSlideIfTooSlowOrAirborne();
+    }
+    private void EndSlideIfTooSlowOrAirborne()
+    {
+        var minSlideSpeed = 0.1f;
+        if (motionControllers.ActiveMotionController.Speed < minSlideSpeed || !Grounded)
+        {
+            SetStateToNormal();
+        }
+    }
+    private void TryJumpFromSlide(bool jump)
+    {
+        if (jump)
+        {
+            SetStateToNormal();
+            motionControllers.ActiveMotionController.Jump();
+        }
+    }
+    private void TryStrafe(Vector2 motion)
+    {
+        motionControllers.ActiveMotionController.MoveHorizontal(motion);
+    }
+    #endregion
+    #region Input and Prefs
+    private IPlayerInput inputGroup;
+    #endregion
+    #region Debugging
+    private const string idCharState = "Character State";
+    private static void CreateOverlayLogs()
+    {
+        DebugOverlay.CreateLog(idCharState);
+    }
+    #endregion
+    #region Init
+    private PlayerRefs refs;
+    private void GetRefComponent()
+    {
+        refs = GetComponent<PlayerRefs>();
+    }
+    private void CreateObjectsAndInjectDependencies()
+    {
+        inputGroup = new KBMInputGroup(refs.PlayerPrefrences);
+        motionControllers = new PlayerMotionControl(
+            inputGroup,
+            new BaseMotionController[3]
+            {
+                refs.MotionControllerNormal,
+                refs.MotionControllerWallrun,
+                refs.MotionControllerSlide
+            });
+    }
+    #endregion    
 }
 public enum CharacterState
 {
+    // Exactly same as planned motion states, capatalize on this and simplify!
     Normal,
-    Wallrunning,
-    Sliding,
+    Wallrun,
+    Slide,
     Climbing
 }

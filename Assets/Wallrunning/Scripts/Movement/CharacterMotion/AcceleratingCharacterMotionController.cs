@@ -27,6 +27,8 @@ public class AcceleratingCharacterMotionController : BaseMotionController
     private float gravityVel = 0f;
     private Vector2 horizontalVel = Vector2.zero;
 
+    private const float motionMultuplier = 50f;
+
     private const float maxLaunchHeight = 50f;
     private const float maxLaunchLateral = 50f;
     private const float maxLaunchFwd = 50f;
@@ -88,12 +90,12 @@ public class AcceleratingCharacterMotionController : BaseMotionController
         var maxFwdSpeed = moveSpeed * (sprint ? sprintMultiplier : 1);
 
         if (horizontalVel.y < maxFwdSpeed && input.y > 0)
-            horizontalVel.y += (input.y * acceleration) + deceleration;
+            horizontalVel.y += ((input.y * acceleration) + deceleration) *Time.deltaTime * motionMultuplier;
         if (horizontalVel.y > -moveBackSpeed && input.y < 0)
-            horizontalVel.y += (input.y * acceleration) + deceleration;
+            horizontalVel.y += ((input.y * acceleration) + deceleration) * Time.deltaTime * motionMultuplier;
 
         if (Mathf.Abs(horizontalVel.x) < strafeSpeed && input.x != 0)
-            horizontalVel.x += (input.x * acceleration) + deceleration * Mathf.Sign(input.x);
+            horizontalVel.x += ((input.x * acceleration) + deceleration * Mathf.Sign(input.x)) * Time.deltaTime * motionMultuplier;
         
     }
     public override void Jump()
