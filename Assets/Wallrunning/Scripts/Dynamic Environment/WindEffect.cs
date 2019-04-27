@@ -3,14 +3,17 @@ using System.Collections.Generic;
 
 public class WindEffect : PhysicsEffect
 {
-    [SerializeField] private float strength = 1f;
+    [SerializeField] private float strength = 100f;
     [SerializeField] private Vector3 direction = Vector3.left;
 
-    private List<Rigidbody> allRigidBodies = new List<Rigidbody>();
+    public float Strength { get => strength; set { strength = value; } }
+    public Vector3 Direction{ get => direction; set { direction = value; } }
+
+    private List<CoalescingForce> allDynamicObjects = new List<CoalescingForce>();
 
     private void Start()
     {
-        allRigidBodies.AddRange(FindObjectsOfType<Rigidbody>());
+        allDynamicObjects.AddRange(FindObjectsOfType<CoalescingForce>());
     }
     private void FixedUpdate()
     {
@@ -19,10 +22,10 @@ public class WindEffect : PhysicsEffect
 
     private void ApplyWind()
     {
-        foreach (Rigidbody rb in allRigidBodies)
+        foreach (CoalescingForce dynamicObject in allDynamicObjects)
         {
-            Debug.Log("Applying wind to " + rb.gameObject.name);
-            rb.AddForce(direction * strength * Time.fixedDeltaTime);
+            //Debug.Log("Applying wind to " + dynamicObject.gameObject.name);
+            dynamicObject.AddForce(direction * strength * Time.fixedDeltaTime);
         }
     }
 }

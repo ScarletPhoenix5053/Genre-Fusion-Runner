@@ -149,6 +149,9 @@ MonoBehaviour:
   MotionControllerNormal: {fileID: 3526873121276352356}
   MotionControllerWallrun: {fileID: 3526873121276352357}
   MotionControllerSlide: {fileID: 1037426966737646628}
+  GroundChecker: {fileID: 3526873121276352358}
+  MainCollider: {fileID: 3526873120542887154}
+  PlayerPrefrences: {fileID: 11400000, guid: 810ac792cdb4d2d4083bd6327b515dca, type: 2}
 --- !u!114 &3526873121276352361
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -161,9 +164,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 39bca563f4fb0c64a9ef2d280cb19719, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  preferences: {fileID: 11400000, guid: 810ac792cdb4d2d4083bd6327b515dca, type: 2}
-  gravityChecker: {fileID: 0}
-  capsuleCollider: {fileID: 3526873120542887154}
   wallrunCamTilt: 10
   wallrunMinStartSpeed: 5
   wallrunMinStaySpeed: 2
@@ -223,7 +223,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   translator: {fileID: 3526873121276352363}
-  slideSpeed: 12
+  slideSpeed: 25
   friction: 0.2
   strafeStrength: 0.3
   strafeMaxSpeed: 3

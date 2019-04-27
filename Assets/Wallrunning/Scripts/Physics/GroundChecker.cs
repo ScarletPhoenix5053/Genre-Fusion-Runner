@@ -35,6 +35,7 @@ public class GroundChecker : MonoBehaviour
         }
     }
     private bool grounded  = false;
+    private bool groundedLastFrame = true;
 
     public float CheckRadius => surfaceCheckRadius;
 
@@ -50,6 +51,8 @@ public class GroundChecker : MonoBehaviour
     protected Transform MainTransform => transformOverride == null ? transform : transformOverride;
     #endregion
 
+    public event GroundingEventHandler OnGrounding;
+
     #region Unity Messages
     private void OnDrawGizmos()
     {
@@ -60,7 +63,7 @@ public class GroundChecker : MonoBehaviour
         Gizmos.DrawRay(MainTransform.TransformPoint(castOrigin), CastDirection.normalized * surfaceSphereCastDist);
         Gizmos.DrawWireSphere(MainTransform.TransformPoint(surfaceCheckPoint), surfaceCheckRadius);
     }
-    private void Update()
+    private void FixedUpdate()
     {
         CheckGrounding();
     }
@@ -84,12 +87,11 @@ public class GroundChecker : MonoBehaviour
         if (Physics.SphereCast(ray, surfaceSphereCastRadius, out tempHit, surfaceSphereCastDist, surfaceMask))
         {
             // Confirm hit ground
+            grounded = false;
             SurfaceConfirm(tempHit);
         }
-        else
-        {
-            grounded = false;
-        }
+
+        if (groundedLastFrame && !grounded) groundedLastFrame = false;
     }
     private void SurfaceConfirm(RaycastHit tempHit)
     {
@@ -102,7 +104,7 @@ public class GroundChecker : MonoBehaviour
                 colBuffer,
                 surfaceMask);
 
-        grounded = false;
+        //grounded = false;
 
         // validate grounding
         for (int i = 0; i < num; i++)
@@ -111,6 +113,12 @@ public class GroundChecker : MonoBehaviour
             if (colBuffer[i].transform == tempHit.transform)
             {
                 groundHit = tempHit;
+                // Invoke onGrounding if not on ground last frame
+                if (!groundedLastFrame)
+                {
+                    OnGrounding?.Invoke();
+                    groundedLastFrame = true;
+                }
                 grounded = true;
 
                 // Snap to surface
@@ -160,3 +168,4 @@ public class GroundChecker : MonoBehaviour
     }
     #endregion
 }
+public delegate void GroundingEventHandler();
