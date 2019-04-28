@@ -114,6 +114,7 @@ public class CoalescingForce : MonoBehaviour
 public delegate void PhysicsUpdateHandler();
 public class CoalescingForceRenderer
 {
+    private const float forceMultiplicationFactor = 1000f;
     private CoalescingForce coalescingForce;
     private Transform transform;
 
@@ -153,7 +154,7 @@ public class CoalescingForceRenderer
         Gizmos.color = indvForceColour;
         foreach (Vector3 force in allForces)
         {
-            Gizmos.DrawLine(transform.position, transform.position - force);
+            Gizmos.DrawLine(transform.position, transform.position - (force / forceMultiplicationFactor));
         }
         //Debug.Log(allForces.Count);
         //Debug.Log(allForces[0]);

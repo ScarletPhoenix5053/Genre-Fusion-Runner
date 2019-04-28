@@ -8,6 +8,7 @@ public class PlayerRefs2 : MonoBehaviour
     [Header("Motion Controllers")]
     public CoalescingForce CoalescingForce;
     public GroundedMotionController GroundedMotionController;
+    public SlideMotionController2 SlideMotionController;
     [Header("Physics and Motion")]
     public GroundChecker GroundChecker;
     public CapsuleCollider MainCollider;

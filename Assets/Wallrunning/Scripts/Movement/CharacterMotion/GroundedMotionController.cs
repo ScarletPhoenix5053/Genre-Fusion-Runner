@@ -1,20 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-[RequireComponent(typeof(PlayerRefs2))]
-[RequireComponent(typeof(CoalescingForce))]
-public class GroundedMotionController : BaseMotionController
+public class GroundedMotionController : BaseMotionController2
 {
-    private PlayerRefs2 refs;
-    private CoalescingForce cf;
-    private const float forceMultiplicationFactor = 10000f;
-    private Vector2 input;
-
-    private void Awake()
+    protected override void Awake()
     {
-        refs = GetComponent<PlayerRefs2>();
-        cf = refs.CoalescingForce;
-
+        base.Awake();
         refs.GroundChecker.OnGrounding += ResetVelOnGrounding;
     }
     private void FixedUpdate()
@@ -23,11 +14,14 @@ public class GroundedMotionController : BaseMotionController
     }
 
     #region Jump & Grav
+    #region Inspector
+#pragma warning disable
     [Header("Airborne Motion")]
     [SerializeField] private float jumpForce = 10f;
     [SerializeField] private float airStrafeForce = 2f;
     [SerializeField] private float gravityForce = 2f;
-
+#pragma warning restore
+    #endregion
     private bool groundedLastFrame = false;
     protected bool Grounded => refs.GroundChecker != null && refs.GroundChecker.Grounded;
     private void ResetVelOnGrounding() => refs.CoalescingForce.ResetVelocityY();
@@ -35,10 +29,6 @@ public class GroundedMotionController : BaseMotionController
     public override void Jump()
     {
         refs.CoalescingForce.AddForce(Vector3.up * jumpForce * forceMultiplicationFactor);
-    }
-    public override void Jump(Vector2 dir)
-    {
-        throw new System.NotImplementedException();
     }
 
     private void TryGravity()
@@ -51,35 +41,33 @@ public class GroundedMotionController : BaseMotionController
     #endregion
 
     #region Horiontal Motion
-    [Header("Grounded Motion")]
+    #region Inspector
+#pragma warning disable
+    [Header("General")]
+    [SerializeField] [Range(0, 1)] private float instantAcceleration = 0.5f;
+    [SerializeField] private float strafeForce = 3f;
+    [Header("Walk")]
     [SerializeField] private float walkForce = 5f;
     [SerializeField] private float walkSpeed = 5f;
-    [SerializeField] [Range(0,1)] private float instantAcceleration = 0.5f;
-    [SerializeField] private float walkBackForce = 2f;
-    [SerializeField] private float strafeForce = 3f;
+    [Header("Sprint")]
     [SerializeField] private float sprintMultiplier = 1.5f;
 
-    private Vector3 motion = Vector3.zero;
-    private Vector3 motionForce = Vector3.zero;
-
-    public override float Speed => throw new System.NotImplementedException();
-
+#pragma warning restore
+    #endregion
     public override void MoveHorizontal(Vector2 input)
     {
-        this.input = input;
+        base.MoveHorizontal(input);
 
         CreateForcesByInput();
         ApplyInstantAccelAndDecelAtLowSpeed();
-        ApplySpeedLimitsToForces();
+        LimitMotionForce(to: walkSpeed);
 
         ApplyHorizontalMotionForce();
     }
-
-    private void CreateForcesByInput()
+    protected override void CreateForcesByInput()
     {
-        motion = new Vector3(this.input.x, 0, this.input.y);
-        motionForce = motion * walkForce * Time.fixedDeltaTime * forceMultiplicationFactor;
-        motionForce = transform.TransformDirection(motionForce);
+        MapInputToMotion();
+        CreateMotionForce(walkSpeed);
     }
     private void ApplyInstantAccelAndDecelAtLowSpeed()
     {
@@ -97,16 +85,7 @@ public class GroundedMotionController : BaseMotionController
             }
         }
     }
-    private void ApplySpeedLimitsToForces()
-    {
-        motionForce = Vector3.ClampMagnitude(motionForce, walkSpeed * forceMultiplicationFactor);
-    }
-    private void ApplyHorizontalMotionForce()
-    {
-        cf.AddForce(motionForce);
-    }
-
-
+    
     public override void Sprint(bool active)
     {
         throw new System.NotImplementedException();

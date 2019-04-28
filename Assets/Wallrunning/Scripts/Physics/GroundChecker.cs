@@ -76,6 +76,8 @@ public class GroundChecker : MonoBehaviour
     }
     private void SurfaceCheck()
     {
+        grounded = false;
+
         // Generate ray
         var ray = 
             new Ray(
@@ -87,7 +89,6 @@ public class GroundChecker : MonoBehaviour
         if (Physics.SphereCast(ray, surfaceSphereCastRadius, out tempHit, surfaceSphereCastDist, surfaceMask))
         {
             // Confirm hit ground
-            grounded = false;
             SurfaceConfirm(tempHit);
         }
 

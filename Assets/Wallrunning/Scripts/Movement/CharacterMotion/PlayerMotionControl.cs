@@ -53,16 +53,26 @@ public class PlayerMotionControl
 public class PlayerMotionControl2
 {
     public readonly GroundedMotionController Normal;
+    public readonly SlideMotionController2 Slide;
 
     // EXPAND TO ALLOW THIS CLASS TO HANDLE JUGGLE MOTION CONTROLLERS AND PLAYER INPUT AS INSTRUCTED BY MAIN CONTROLLER CLASS
     private IPlayerInput playerInput;
-    private List<BaseMotionController> allMotionControllers = new List<BaseMotionController>();
+    private List<BaseMotionController2> allMotionControllers = new List<BaseMotionController2>();
 
+    public void SetActiveMotionController(CharacterState to)
+    {
+        ActiveMotionControllerId = to;
+        foreach (BaseMotionController2 mc in allMotionControllers)
+        {
+            if (mc == ActiveMotionController) mc.enabled = true;
+            else mc.enabled = false;
+        }
+    }
     /*
     public void SetActiveMotionController(CharacterState to)
     {
         ActiveMotionControllerId = to;
-        foreach (BaseMotionController mc in allMotionControllers)
+        foreach (BaseMotionController2 mc in allMotionControllers)
         {
             if (mc == ActiveMotionController) mc.enabled = true;
             else mc.enabled = false;
@@ -70,7 +80,7 @@ public class PlayerMotionControl2
     }
     */
     public CharacterState ActiveMotionControllerId { get; private set; } = CharacterState.Normal;
-    public BaseMotionController ActiveMotionController => allMotionControllers[(int)ActiveMotionControllerId];
+    public BaseMotionController2 ActiveMotionController => allMotionControllers[(int)ActiveMotionControllerId];
 
     /// <summary>
     /// 1: Accel
@@ -78,27 +88,24 @@ public class PlayerMotionControl2
     /// 3: Slide
     /// </summary>
     /// <param name="motionControllers"></param>
-    public PlayerMotionControl2(IPlayerInput input, BaseMotionController[] motionControllers)
+    public PlayerMotionControl2(IPlayerInput input, BaseMotionController2[] motionControllers)
     {
         // Assign
         Normal = motionControllers[0] as GroundedMotionController;
         //Wallrun = motionControllers[1] as WallrunMotionController;
-        //Slide = motionControllers[2] as SlideMotionController;
+        Slide = motionControllers[1] as SlideMotionController2;
         playerInput = input;
 
         // Store in collection
         allMotionControllers.Add(Normal);
-        /*
         allMotionControllers.AddRange(
-            new BaseMotionController[3]
+            new BaseMotionController2[2]
             {
                 Normal,
-                Wallrun,
-                Slide,
+                Slide
             });
-            */
 
         // Set default
-        //SetActiveMotionController(CharacterState.Normal);
+        SetActiveMotionController(CharacterState.Normal);
     }
 }

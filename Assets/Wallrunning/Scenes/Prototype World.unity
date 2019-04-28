@@ -2752,8 +2752,8 @@ GameObject:
   - component: {fileID: 6384477814335055282}
   - component: {fileID: 6384477814335055284}
   - component: {fileID: 6384477814335055283}
+  - component: {fileID: 6384477814335055285}
   - component: {fileID: 6384477814335055270}
-  - component: {fileID: 7353936739298150119}
   - component: {fileID: 6384477814335055272}
   - component: {fileID: 6384477814335055279}
   - component: {fileID: 6384477814335055278}
@@ -2811,6 +2811,7 @@ MonoBehaviour:
   wallrunMinStaySpeed: 0
   wallrunLeapBoost: 10
   wallrunAdjustTime: 0.5
+  minSlideSpeed: 4
 --- !u!114 &6384477814335055281
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2826,6 +2827,7 @@ MonoBehaviour:
   Cam: {fileID: 491973038}
   CoalescingForce: {fileID: 6384477814335055282}
   GroundedMotionController: {fileID: 6384477814335055283}
+  SlideMotionController: {fileID: 6384477814335055285}
   GroundChecker: {fileID: 6384477814335055269}
   MainCollider: {fileID: 6384477813458894385}
   PlayerPrefrences: {fileID: 11400000, guid: 810ac792cdb4d2d4083bd6327b515dca, type: 2}
@@ -2856,15 +2858,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db13ef9b0e2cff441ae710d9a89b8ca4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  translator: {fileID: 0}
   jumpForce: 12
   airStrafeForce: 2
-  gravityForce: 20
+  gravityForce: 22
+  instantAcceleration: 0.755
+  strafeForce: 3
   walkForce: 5
   walkSpeed: 5
-  instantAcceleration: 0.373
-  walkBackForce: 2
-  strafeForce: 3
   sprintMultiplier: 1.5
 --- !u!114 &6384477814335055284
 MonoBehaviour:
@@ -2879,8 +2879,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   velocityExponent: 1.725
-  dragConstant: 100
---- !u!114 &7353936739298150119
+  dragConstant: 50
+--- !u!114 &6384477814335055285
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2889,11 +2889,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 6384477814335055277}
   m_Enabled: 0
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9876b82f8865a534584cb96bf206497b, type: 3}
+  m_Script: {fileID: 11500000, guid: 0eab595574594404ca75dac85800d5e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  translator: {fileID: 6384477814335055272}
-  slideSpeed: 25
+  slideStartForce: 20
+  maxSlideSpeed: 12
   friction: 0.2
-  strafeStrength: 0.3
   strafeMaxSpeed: 3
+  strafeStrength: 1.5

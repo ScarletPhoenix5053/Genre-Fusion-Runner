@@ -63,17 +63,6 @@ public class ParkourPlayerController2 : MonoBehaviour
     private void CamControlsRotation(bool value) => refs.Cam.ControlTargetRotation = value;
     #endregion
     #region State Control
-    private void TrySlide(bool crouch)
-    {
-
-        // If running and holding crouch
-        var minSlideSpeed = wallrunMinStartSpeed;
-        if (Grounded && Speed > minSlideSpeed && crouch)
-        {
-            // Slide!
-            SetStateToSlide();
-        }
-    }
     private void TryWallRun()
     {
 
@@ -87,7 +76,7 @@ public class ParkourPlayerController2 : MonoBehaviour
     private void SetStateToSlide()
     {
         SetState(CharacterState.Slide);
-        //motionControllers.SetActiveMotionController(CharacterState.Slide);
+        motionControllers.SetActiveMotionController(CharacterState.Slide);
 
         CamControlsRotation(false);
     }
@@ -110,7 +99,7 @@ public class ParkourPlayerController2 : MonoBehaviour
     private void SetStateToNormal()
     {
         SetState(CharacterState.Normal);
-        //motionControllers.SetActiveMotionController(CharacterState.Normal);
+        motionControllers.SetActiveMotionController(CharacterState.Normal);
 
         CamControlsRotation(true);
     }
@@ -126,7 +115,7 @@ public class ParkourPlayerController2 : MonoBehaviour
         var crouch = inputGroup.GetInputCrouch();
         TryNormalMotion(motion, sprint, jump);
         //TryWallRun();
-        //TrySlide(crouch);
+        TrySlide(crouch);
     }
     private void LoopNormalState()
     {
@@ -140,6 +129,7 @@ public class ParkourPlayerController2 : MonoBehaviour
         if (jump && Grounded) motionControllers.ActiveMotionController.Jump();
         motionControllers.ActiveMotionController.MoveHorizontal(motion);
     }
+
     public float Speed => motionControllers.ActiveMotionController.Speed;
     protected bool Grounded => refs.GroundChecker.Grounded;
     #endregion
@@ -310,6 +300,18 @@ public class ParkourPlayerController2 : MonoBehaviour
     }
     #endregion
     #region Sliding 
+    [SerializeField] private float minSlideSpeed = 1f;
+    private void TrySlide(bool crouch)
+    {
+
+        // If running and holding crouch
+        var minSlideSpeed = wallrunMinStartSpeed;
+        if (Grounded && Speed > minSlideSpeed && crouch)
+        {
+            // Slide!
+            SetStateToSlide();
+        }
+    }
     private void LoopSlideState()
     {
         UpdateCam();
@@ -320,13 +322,13 @@ public class ParkourPlayerController2 : MonoBehaviour
         var motion = inputGroup.GetAxisMotion();
         var jump = inputGroup.GetInputJump();
         TryStrafe(motion);
-        TryJumpFromSlide(jump);
+        //TryJumpFromSlide(jump);
         EndSlideIfTooSlowOrAirborne();
     }
     private void EndSlideIfTooSlowOrAirborne()
     {
-        var minSlideSpeed = 0.1f;
-        if (motionControllers.ActiveMotionController.Speed < minSlideSpeed || !Grounded)
+        //Debug.Log(motionControllers.ActiveMotionController.Speed);
+        if ((motionControllers.ActiveMotionController.Speed < minSlideSpeed || !Grounded) && !inputGroup.GetInputCrouch())
         {
             SetStateToNormal();
         }
@@ -365,9 +367,10 @@ public class ParkourPlayerController2 : MonoBehaviour
         inputGroup = new KBMInputGroup(refs.PlayerPrefrences);
         motionControllers = new PlayerMotionControl2(
             inputGroup,
-            new BaseMotionController[1]
+            new BaseMotionController2[2]
             {
-                refs.GroundedMotionController
+                refs.GroundedMotionController,
+                refs.SlideMotionController
             });
     }
     #endregion    
