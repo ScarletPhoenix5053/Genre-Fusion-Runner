@@ -10,6 +10,15 @@ public class GroundedMotionController : BaseMotionController2
     }
     private void FixedUpdate()
     {
+        // If grounded, use ground friction
+        if (Grounded)
+        {
+            refs.Drag.DragConstant = friction;
+        }
+        else
+        {
+            refs.Drag.DragConstant = airFriction;
+        }
         TryGravity();
     }
 
@@ -34,11 +43,13 @@ public class GroundedMotionController : BaseMotionController2
     }
     #endregion
 
-    #region Horiontal Motion
+    #region Horizontal Motion
     #region Inspector
 #pragma warning disable
     [Header("General")]
     [SerializeField] [Range(0, 1)] private float instantAcceleration = 0.5f;
+    [SerializeField] private float friction = 50f;
+    [SerializeField] private float airFriction = 20f;
     [SerializeField] private float strafeForce = 3f;
     [Header("Walk")]
     [SerializeField] private float walkForce = 5f;
@@ -54,6 +65,7 @@ public class GroundedMotionController : BaseMotionController2
 
         CreateForcesByInput();
         ApplyInstantAccelAndDecelAtLowSpeed();
+        if (Grounded) AddSprintForce();
         LimitMotionForce(to: walkSpeed);
 
         ApplyHorizontalMotionForce();
@@ -61,7 +73,10 @@ public class GroundedMotionController : BaseMotionController2
     protected override void CreateForcesByInput()
     {
         MapInputToMotion();
-        CreateMotionForce(walkSpeed);
+        if (Grounded)
+            CreateMotionForce(walkSpeed);
+        else
+            CreateMotionForce(airStrafeForce);
     }
     private void ApplyInstantAccelAndDecelAtLowSpeed()
     {
@@ -78,11 +93,6 @@ public class GroundedMotionController : BaseMotionController2
                 cf.ResetVelocityZ();
             }
         }
-    }
-    
-    public override void Sprint(bool active)
-    {
-        throw new System.NotImplementedException();
     }
     #endregion
 

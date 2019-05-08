@@ -4,7 +4,7 @@ using System.Collections;
 public class SlideMotionController : BaseMotionController
 {
     [SerializeField] private float slideSpeed = 12f;
-    [SerializeField] private float friction = 0.2f;
+    [SerializeField] private float friction = 35f;
     [SerializeField] private float strafeStrength = 0.3f;
     [SerializeField] private float strafeMaxSpeed = 3f;
 

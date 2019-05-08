@@ -9,31 +9,13 @@ public class PlayerRefs2 : MonoBehaviour
     public CoalescingForce CoalescingForce;
     public GroundedMotionController GroundedMotionController;
     public SlideMotionController2 SlideMotionController;
+    public WallrunMotionController2 WallrunMotionController;
+    public WallClimbMotionController WallClimbMotionController;
     [Header("Physics and Motion")]
     public GroundChecker GroundChecker;
     public CapsuleCollider MainCollider;
+    public TrueDrag Drag;
     [Header("Prefrences")]
     public PlayerPreferenceGroup PlayerPrefrences;
-
-
-    /*
-    if (cam == null)
-    {
-        if (!(Camera.main != null && (cam = Camera.main.GetComponent<CameraController>())))
-            Debug.LogError("Cannot find camera: unable to complete validataion.", this);
-    }
     
-        // Prefs
-        if (preferences == null) Debug.LogError("Cannot find player prefrences: unable to complete validataion.", this);
-    
-        // Gravity
-        if (gravityChecker == null) gravityChecker = Helper.FindRelevantComponent<GroundChecker>(transform);
-
-        // Colliders
-        if (capsuleCollider == null) capsuleCollider = Helper.FindRelevantComponent<CapsuleCollider>(transform);
-
-
-
-
-    */
 }

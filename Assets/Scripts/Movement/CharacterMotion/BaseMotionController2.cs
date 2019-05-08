@@ -39,8 +39,8 @@ public abstract class BaseMotionController2 : MonoBehaviour
     }
     protected virtual void CreateMotionForce(float forceStrength)
     {
-        motionForce = motion * forceStrength * Time.fixedDeltaTime * forceMultiplicationFactor;
-    }    
+        motionForce = ToForceOverFixedTime(motion * forceStrength);
+    }
     protected virtual void LimitMotionForce(float to)
     {
         motionForce = Vector3.ClampMagnitude(motionForce, to * forceMultiplicationFactor);
@@ -51,7 +51,17 @@ public abstract class BaseMotionController2 : MonoBehaviour
         cf.AddForce(motionForce);
     }
 
-    public virtual void Sprint(bool active) => throw new System.NotImplementedException();
+    [Header("Sprint")]
+    [SerializeField] private float sprintForce;
+    protected bool sprint = false;
+
+    public virtual void Sprint(bool active) => sprint = active;
+
+    protected virtual void AddSprintForce()
+    {
+        if (!sprint) return;
+        motionForce += ToForceOverFixedTime(Vector3.forward * sprintForce);
+    }
 
     #region Jump
     #region Inspector

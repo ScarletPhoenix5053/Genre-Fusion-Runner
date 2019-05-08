@@ -33,8 +33,11 @@ public class CameraController : MonoBehaviour
 
     public bool ControlTargetRotation { get; set; } = true;
 
-    #region Methods
-    public void Turn(Vector2 input)
+    private void Update()
+    {
+        SmoothTowardsTargetTilt();
+    }
+    public void Turn(Vector2 input, float lagTime = 0f)
     {
         // Create rotation values
         yaw += input.x;
@@ -46,49 +49,74 @@ public class CameraController : MonoBehaviour
         transform.eulerAngles = currentRotation;
 
         // Control target rotation
-        if (ControlTargetRotation)
-        {
-            Vector3 e = transform.eulerAngles;
-            e.x = 0;
-            target.eulerAngles = e;
-        }
+        this.lagTime = lagTime;
+        SmoothTargetRotation();
 
         // Move position
         transform.position = (target.position - transform.forward * distFromTarget) + offset;
-    }    
-
-    public void SetTilt(float angle)
-    {
-        // potential cover up for weird over-tilting: clamp between 0 and +-10 depending on last angle entered.
-        //Debug.Log("tilting to " + angle);
-        targetAngle = angle;
-
-        if (tiltRoutine != null) StopCoroutine(tiltRoutine);
-        tiltRoutine = TiltCameraRoutine();
-        StartCoroutine(tiltRoutine);
-
-        //transform.eulerAngles = currentRotation;
     }
 
-    private IEnumerator TiltCameraRoutine()
+    float lagTime = 0f;
+    float targetRotSmoothVel = 0f;
+    private void SmoothTargetRotation()
     {
-        tiltSmoothCurrent = 0;
-        prevRotation = transform.rotation;
-        targetRotation = Quaternion.Euler(Vector3.forward * targetAngle);
-
-        while (tiltSmoothCurrent < tiltSmoothTime)
+        if (ControlTargetRotation)
         {
-            tiltSmoothCurrent += tiltSmoothTime * Time.deltaTime;
+            Vector3 e;
 
-            var interpolatedRotation = 
-                Quaternion.Slerp(
-                    transform.rotation,
-                    targetRotation,
-                    tiltSmoothCurrent / tiltSmoothTime
+            e.x = 0;
+            e.z = 0;
+
+            if (lagTime == 0)
+            {
+                e.y = Mathf.SmoothDampAngle(
+                    target.eulerAngles.y,
+                    transform.eulerAngles.y,
+                    ref targetRotSmoothVel,
+                    lagTime
                     );
+            }
+            else
+            {
+                e.y = transform.eulerAngles.y;
+            }
 
-            currentRotation = interpolatedRotation.eulerAngles;
-            yield return new WaitForEndOfFrame();
+            target.eulerAngles = e;
+        }
+    }
+
+    #region Camera Tilt
+    public void SetTilt(float angle)
+    {
+        targetTilt = angle;
+    }
+    private float targetTilt = 0f;
+    private float smoothVel = 0f;
+    private void SmoothTowardsTargetTilt()
+    {
+        currentRotation.z = Mathf.SmoothDampAngle(
+            currentRotation.z,
+            targetTilt,
+            ref smoothVel,
+            tiltSmoothTime
+            );
+    }
+
+    #endregion
+    #region Camera Dip
+    [SerializeField] private float cameraDip = 1f;
+    private bool dipped = false;
+    public void DipCamera(bool dip)
+    {
+        if (dip && !dipped)
+        {
+            offset.y -= cameraDip;
+            dipped = true;
+        }
+        else if (dipped)
+        {
+            offset.y += cameraDip;
+            dipped = false;
         }
     }
     #endregion

@@ -29,7 +29,6 @@ public class KanaPickup : MonoBehaviour
         var playerIsNear = Physics.OverlapSphere(transform.position + checkOffset, checkRadius, playerMask);
         if (playerIsNear.Length > 0)
         {
-            Debug.Log("Entered " + name);
             Activate();
         }
     }
@@ -41,6 +40,7 @@ public class KanaPickup : MonoBehaviour
 
     public void Activate()
     {
+        if (kana != null)
         HaikuCollectionSystem.Instance.CollectKana(kana);
         SafeDestroy.Object(gameObject);
     }

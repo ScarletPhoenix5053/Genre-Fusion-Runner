@@ -28,7 +28,7 @@ public class CoalescingForce : MonoBehaviour
     }
     private void OnDrawGizmos()
     {
-        if (renderForces)
+        if (renderForces && forceRenderer != null)
         {
             forceRenderer.DrawForceGizmos();
         }
@@ -56,6 +56,7 @@ public class CoalescingForce : MonoBehaviour
     [SerializeField] private Vector3 velocity = Vector3.zero;   // [m s^-1]
     public Vector3 Velocity => velocity;
 
+    public float ForwardVel => transform.InverseTransformDirection(velocity).z;
     public float Speed => velocity.magnitude;
 
     public void ResetVelocityX() => velocity.x = 0;
@@ -80,11 +81,25 @@ public class CoalescingForce : MonoBehaviour
     {
         Forces.Add(force);
     }
-    public void AddForceOverTime(Vector3 force, float t)
+    public IEnumerator AddForceOverTime(Vector3 force, float t)
     {
-
+        if (forceOverTimeRoutine != null) StopCoroutine(forceOverTimeRoutine);
+        forceOverTimeRoutine = ForceOverTimeRoutine(force, t);
+        StartCoroutine(forceOverTimeRoutine);
+        return forceOverTimeRoutine;
     }
+    public void CancelForceOverTime(IEnumerator routine) => StopCoroutine(routine);
+    private IEnumerator forceOverTimeRoutine;
+    private IEnumerator ForceOverTimeRoutine(Vector3 force, float t)
+    {        
+        while (t > 0)
+        {
+            AddForce(force);
 
+            t -= Time.fixedDeltaTime;
+            yield return new WaitForFixedUpdate();
+        }
+    }
     private void UpdateNetForce()
     {
         netForce = Vector3.zero;

@@ -74,6 +74,12 @@ public class HaikuCollectionSystem : MonoBehaviour
     {
         var allKana = nextHaiku.ToKana();
         var posZ = 0;
+        for (int k = 0; k < allKana.Length; k++)
+        {
+            var kanaPickup = kanaPickupCollection.GetChild(k).GetComponent<KanaPickup>();
+            kanaPickup.SetKana(to: allKana[k]);
+        }
+        /*
         foreach (Kana kana in allKana)
         {
             posZ += 5;
@@ -86,7 +92,7 @@ public class HaikuCollectionSystem : MonoBehaviour
                     )
                     .GetComponent<KanaPickup>();
             kanaPickup.SetKana(to: kana);
-        }
+        }*/
     }
     #endregion
     #region Display
@@ -107,7 +113,6 @@ public class HaikuCollectionSystem : MonoBehaviour
     private void UpdateHaikuDisplay(Kana newKana)
     {
         Debug.Assert(newKana != null);
-        Debug.Log(newKana.Line + ", " + newKana.PosInLine);
         haikuDisplay.SetKanaSquare(newKana.Line, newKana.PosInLine, to: newKana);
     }
     #endregion    
@@ -136,19 +141,19 @@ public class HaikuCollectionSystem : MonoBehaviour
             new HaikuLine(
             new Kana[]
             {
-                new Kana('蝶'),
-                new Kana('の'),
-                new Kana('触'),
-                new Kana('れ')
-            }, "The butterfly touches"),
+                new Kana('行'),
+                new Kana('く'),
+                new Kana('礎'),
+                new Kana('沓'),
+                new Kana('に')
+            }, "and goes around the base stone"),
             new HaikuLine(
             new Kana[]
             {
-                new Kana('蝶'),
-                new Kana('の'),
-                new Kana('触'),
-                new Kana('れ')
-            }, "The butterfly touches"),
+                new Kana('匂'),
+                new Kana('ふ'),
+                new Kana('草')
+            }, "and glass gives off the scent"),
         };
         var newHaiku = new Haiku(newLines);
         /*

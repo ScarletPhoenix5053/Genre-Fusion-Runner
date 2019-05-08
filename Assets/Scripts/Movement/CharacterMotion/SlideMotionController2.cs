@@ -6,22 +6,29 @@ public class SlideMotionController2 : BaseMotionController2
     private void OnEnable()
     {
         ApplyInitialSlideForce();
+        refs.Drag.DragConstant = friction;
+    }
+    private void OnDisable()
+    {
+        cf.CancelForceOverTime(forceOverTimeRoutine);
     }
 
-    #region Slide General
+    #region Slide General 
     #region Inspector
 #pragma warning disable
     [Header("Slide")]
     [SerializeField] private float slideStartForce;
+    [SerializeField] private float slideStartTime = 1f;
     [SerializeField] private float maxSlideSpeed = 12f;
-    [SerializeField] private float friction = 0.2f;
+    [SerializeField] private float friction = 35f;
+    private IEnumerator forceOverTimeRoutine;
 #pragma warning restore
     #endregion
     public float SlideFriction { get => friction; set { friction = value; } }
     private void ApplyInitialSlideForce()
     {
-        var startForce = -(transform.forward * slideStartForce * forceMultiplicationFactor);
-        cf.AddForce(-startForce);
+        var startForce = -(ToForceOverFixedTime(transform.forward * slideStartForce));
+        forceOverTimeRoutine = cf.AddForceOverTime(-startForce, slideStartTime);
     }
     #endregion
 

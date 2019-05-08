@@ -43,3 +43,17 @@ public class LineOutOfRangeException : Exception
     {
     }
 }
+public class BadBufferSizeException : Exception
+{
+    public BadBufferSizeException()
+    {
+    }
+    public BadBufferSizeException(string message)
+        : base(message)
+    {
+    }
+    public BadBufferSizeException(string message, Exception inner)
+        : base(message, inner)
+    {
+    }
+}

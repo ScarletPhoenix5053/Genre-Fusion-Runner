@@ -24,7 +24,6 @@ public class HaikuDisplay : MonoBehaviour
         Debug.Assert(kanaSquares[lineIndex][squareIndex] != null);
         */
         kanaSquares[lineIndex][squareIndex].SetKana(to: newKana);
-        Debug.Log("Setting value of: ", kanaSquares[lineIndex][squareIndex]);
     }
 
 

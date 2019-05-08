@@ -53,7 +53,9 @@ public class PlayerMotionControl
 public class PlayerMotionControl2
 {
     public readonly GroundedMotionController Normal;
+    public readonly WallrunMotionController2 Wallrun;
     public readonly SlideMotionController2 Slide;
+    public readonly WallClimbMotionController Climb;
 
     // EXPAND TO ALLOW THIS CLASS TO HANDLE JUGGLE MOTION CONTROLLERS AND PLAYER INPUT AS INSTRUCTED BY MAIN CONTROLLER CLASS
     private IPlayerInput playerInput;
@@ -68,17 +70,6 @@ public class PlayerMotionControl2
             else mc.enabled = false;
         }
     }
-    /*
-    public void SetActiveMotionController(CharacterState to)
-    {
-        ActiveMotionControllerId = to;
-        foreach (BaseMotionController2 mc in allMotionControllers)
-        {
-            if (mc == ActiveMotionController) mc.enabled = true;
-            else mc.enabled = false;
-        }
-    }
-    */
     public CharacterState ActiveMotionControllerId { get; private set; } = CharacterState.Normal;
     public BaseMotionController2 ActiveMotionController => allMotionControllers[(int)ActiveMotionControllerId];
 
@@ -92,17 +83,19 @@ public class PlayerMotionControl2
     {
         // Assign
         Normal = motionControllers[0] as GroundedMotionController;
-        //Wallrun = motionControllers[1] as WallrunMotionController;
-        Slide = motionControllers[1] as SlideMotionController2;
+        Wallrun = motionControllers[1] as WallrunMotionController2;
+        Slide = motionControllers[2] as SlideMotionController2;
+        Climb = motionControllers[3] as WallClimbMotionController;
         playerInput = input;
 
         // Store in collection
-        allMotionControllers.Add(Normal);
         allMotionControllers.AddRange(
-            new BaseMotionController2[2]
+            new BaseMotionController2[4]
             {
                 Normal,
-                Slide
+                Wallrun,
+                Slide,
+                Climb
             });
 
         // Set default

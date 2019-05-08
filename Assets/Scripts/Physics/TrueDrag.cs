@@ -7,6 +7,8 @@ public class TrueDrag : MonoBehaviour
     [SerializeField] [Range(1, 2)] private float velocityExponent = 1f;
     [SerializeField] private float dragConstant;
 
+    public float DragConstant { get => dragConstant; set { dragConstant = value; } }
+
     private CoalescingForce coalescingForce;
 
     private void Start()

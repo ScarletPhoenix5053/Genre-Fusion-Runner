@@ -48,7 +48,7 @@ MonoBehaviour:
   playerMask:
     serializedVersion: 2
     m_Bits: 512
-  checkRadius: 1.2
+  checkRadius: 3
   checkOffset: {x: 0, y: 2, z: 0}
 --- !u!1 &8245381748529107883
 GameObject:
@@ -240,7 +240,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\u8776"
+  m_Text: 
 --- !u!1001 &144205719632847793
 PrefabInstance:
   m_ObjectHideFlags: 0
