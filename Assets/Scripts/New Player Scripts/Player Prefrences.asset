@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: db7091e21ecf43d4686fa8e982df009d, type: 3}
-  m_Name: New Player Preference Group
+  m_Name: Player Prefrences
   m_EditorClassIdentifier: 
   ControlType: 0
   KeyMoveUp: 119

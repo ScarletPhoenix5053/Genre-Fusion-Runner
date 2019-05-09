@@ -20,6 +20,18 @@ MonoBehaviour:
   SpeedBoostOnWallJump: 2
   GravityStrength: 1
   GravityMax: 10
+  GoundCheck:
+    actorHeight: 2
+    surfaceMask:
+      serializedVersion: 2
+      m_Bits: 311
+    smooth: 1
+    smoothSpeed: 20
+    CastOrigin: {x: 0, y: 1.2, z: 0}
+    CheckPoint: {x: 0, y: -0.9, z: 0}
+    surfaceSphereCastRadius: 0.1
+    surfaceSphereCastDist: 20
+    CheckRadius: 0.2
   FrictionGround: 5
   FrictionSlide: 1
   FrictionWall: 2.5

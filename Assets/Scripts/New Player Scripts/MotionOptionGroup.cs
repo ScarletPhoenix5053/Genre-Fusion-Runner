@@ -15,6 +15,23 @@ public class MotionOptionGroup : ScriptableObject
     [Header("Gravity")]
     public float GravityStrength = 1f;
     public float GravityMax = 10f;
+    public GroundCheckVars GoundCheck;
+    [System.Serializable]
+    public class GroundCheckVars
+    {
+        [Header("General")]
+        public float actorHeight = 2f;
+        public LayerMask surfaceMask;
+        [Header("Smoothing")]
+        public bool smooth;
+        public float smoothSpeed;
+        [Header("Casting")]
+        public Vector3 CastOrigin = new Vector3(0, 1.2f, 0);
+        public Vector3 CheckPoint = new Vector3(0, -0.87f, 0);
+        public float surfaceSphereCastRadius = 0.17f;
+        public float surfaceSphereCastDist = 20f;
+        public float CheckRadius = 0.57f;
+    }
 
     [Header("Surface Friction")]
     public float FrictionGround = 5f;
