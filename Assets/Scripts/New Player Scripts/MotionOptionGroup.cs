@@ -6,7 +6,7 @@ public class MotionOptionGroup : ScriptableObject
 {
     [Header("Speed")]
     public float SpeedWalk = 5f;
-    public float SpeedRun = 8f;
+    public float SpeedRunMultiplier = 1.5f;
     public float SpeedWallRun = 12f;
     public float SpeedBoostOnSlide = 2f;
     public float SpeedBoostOnWallRun = 2f;
@@ -39,6 +39,7 @@ public class MotionOptionGroup : ScriptableObject
     public float FrictionWall = 2.5f;
 
     [Header("In Air")]
+    public float AirStrafe = 1f;
     public float AirResistance = 2f;
     public int AddJumps = 0;
 

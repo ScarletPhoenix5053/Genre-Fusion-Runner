@@ -5,6 +5,21 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    [Header("Pref Files")]
+    [SerializeField] private PlayerPreferenceGroup prefs;
+    [SerializeField] private MotionOptionGroup motion;
+
+    private IPlayerInput inputGroup;
+    private PlayerState state;
+
+    [SerializeField] protected float jumpForce = 12f;
+    [SerializeField] private float gravityForce = 2f;
+    private CoalescingForce cf;
+    private TrueDrag drag;
+    private const float forceMultiplicationFactor = 100f;
+    private Vector3 ToForceInstant(Vector3 force) => force * forceMultiplicationFactor;
+    private Vector3 ToForceOverFixedTime(Vector3 force) => force * Time.fixedDeltaTime * forceMultiplicationFactor;
+
     #region Grounding
     private bool grounded = false;
     private bool groundedLastFrame = true;
@@ -119,19 +134,28 @@ public class PlayerController : MonoBehaviour
     }
     #endregion
 
-    [Header("Pref Files")]
-    [SerializeField] private PlayerPreferenceGroup prefs;
-    [SerializeField] private MotionOptionGroup motion;
+    #region Motion
+    private Vector3 motionForce = Vector3.zero;
 
-    private IPlayerInput inputGroup;
-    private PlayerState state;
-
-    [SerializeField] protected float jumpForce = 12f;
-    [SerializeField] private float gravityForce = 2f;
-    private CoalescingForce cf;
-    private const float forceMultiplicationFactor = 100f;
-    private Vector3 ToForceInstant(Vector3 force) => force * forceMultiplicationFactor;
-    private Vector3 ToForceOverFixedTime(Vector3 force) => force * Time.fixedDeltaTime * forceMultiplicationFactor;
+    private void ApplyForce(Vector3 force) => cf.AddForce(force);
+    private void MoveByInput(Vector2 motionAxis, float speed)
+    {
+        // Move player by input
+        var motionDir = new Vector3(motionAxis.x, 0, motionAxis.y).normalized;
+        motionForce = ToForceOverFixedTime(motionDir * speed);
+        motionForce = transform.TransformDirection(motionForce);
+    }
+    private void JumpIf(bool input)
+    {
+        // Try jump
+        if (input)
+        {
+            state = PlayerState.Jumping;
+            transform.position += Vector3.up * gc.CheckRadius;
+            cf.AddForce(ToForceInstant(Vector3.up * motion.JumpHeight));
+        }
+    }
+    #endregion
 
     #region Runtime
     private void Awake()
@@ -141,6 +165,7 @@ public class PlayerController : MonoBehaviour
 
         // temp
         cf = GetComponent<CoalescingForce>();
+        drag = GetComponent<TrueDrag>();
 
         // Init logs
         DebugOverlay.CreateLog(idState);
@@ -152,11 +177,13 @@ public class PlayerController : MonoBehaviour
 
         // Vars for cycle
         var jump = inputGroup.GetInputJump();
+        var sprint = inputGroup.GetInputSprint();
         var motionAxis = inputGroup.GetAxisMotion();
 
         // Do action by input
         switch (state)
         {
+            #region Still
             case PlayerState.Still:
                 // Ensure player is grounded
                 if (!Grounded)
@@ -166,22 +193,18 @@ public class PlayerController : MonoBehaviour
                 }
                 else
                 {
+                    JumpIf(input: jump);
+
                     // Try move
                     if (motionAxis != Vector2.zero)
                     {
                         state = PlayerState.GroundedMotion;
                     }
-                    // Try jump
-                    if (inputGroup.GetInputJump())
-                    {
-                        state = PlayerState.Jumping;
-                        transform.position += Vector3.up * gc.CheckRadius;
-                        cf.AddForce(ToForceInstant(Vector3.up * motion.JumpHeight));
-                    }
                 }
                 break;
-
-            case PlayerState.GroundedMotion:                
+            #endregion
+            #region Grounded Motion
+            case PlayerState.GroundedMotion:
                 // Stop moving when momentum is low
                 if (motionAxis == Vector2.zero)
                 {
@@ -189,11 +212,20 @@ public class PlayerController : MonoBehaviour
                 }
                 else
                 {
-                    // Move player by input
+                    MoveByInput(motionAxis, motion.SpeedWalk);
+                    JumpIf(input: jump);
 
+                    // Try sprint
+                    if (sprint)
+                    {
+                        motionForce *= motion.SpeedRunMultiplier;
+                    }
+
+                    ApplyForce(motionForce);
                 }
                 break;
-
+            #endregion
+            #region Jump
             case PlayerState.Jumping:
                 // Land on grounding
                 if (Grounded)
@@ -204,11 +236,15 @@ public class PlayerController : MonoBehaviour
                 }
                 else
                 {
+                    MoveByInput(motionAxis, motion.AirStrafe);
+                    ApplyForce(motionForce);
+
                     // Apply grav
                     var gravForce = ToForceOverFixedTime(Vector3.down * motion.GravityStrength);
                     cf.AddForce(gravForce);
                 }
                 break;
+            #endregion
 
             default: throw new System.NotImplementedException("State interactions for state " 
                 + state + " are not implimented");
@@ -219,6 +255,8 @@ public class PlayerController : MonoBehaviour
     }
     private void OnDrawGizmos()
     {
+        if (!Application.isPlaying) return;
+
         Gizmos.color = Color.cyan;
         Gizmos.DrawWireSphere(transform.TransformPoint(gc.CheckPoint), gc.surfaceSphereCastRadius);
 

@@ -12,14 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e754b709a9b1279448cd344faae95a68, type: 3}
   m_Name: Default Motion Settings
   m_EditorClassIdentifier: 
-  SpeedWalk: 5
-  SpeedRun: 8
+  SpeedWalk: 8
+  SpeedRunMultiplier: 2
   SpeedWallRun: 12
   SpeedBoostOnSlide: 2
   SpeedBoostOnWallRun: 2
   SpeedBoostOnWallJump: 2
-  GravityStrength: 1
-  GravityMax: 10
+  GravityStrength: 10
+  GravityMax: 1000
   GoundCheck:
     actorHeight: 2
     surfaceMask:
@@ -32,9 +32,10 @@ MonoBehaviour:
     surfaceSphereCastRadius: 0.1
     surfaceSphereCastDist: 20
     CheckRadius: 0.2
-  FrictionGround: 5
+  FrictionGround: 6
   FrictionSlide: 1
   FrictionWall: 2.5
-  AirResistance: 2
+  AirStrafe: 5
+  AirResistance: 0.2
   AddJumps: 0
-  JumpHeight: 10
+  JumpHeight: 18
