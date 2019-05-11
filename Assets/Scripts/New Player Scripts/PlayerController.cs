@@ -151,7 +151,7 @@ public class PlayerController : MonoBehaviour
         if (input)
         {
             state = PlayerState.Jumping;
-            transform.position += Vector3.up * gc.CheckRadius;
+            transform.position += Vector3.up *(gc.CheckRadius + 0.1f);
             cf.AddForce(ToForceInstant(Vector3.up * motion.JumpHeight));
         }
     }
@@ -212,8 +212,8 @@ public class PlayerController : MonoBehaviour
                 }
                 else
                 {
-                    MoveByInput(motionAxis, motion.SpeedWalk);
                     JumpIf(input: jump);
+                    MoveByInput(motionAxis, motion.SpeedWalk);
 
                     // Try sprint
                     if (sprint)
