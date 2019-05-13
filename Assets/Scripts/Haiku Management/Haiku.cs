@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.IO;
 using System.Collections.Generic;
 
 public class Haiku
 {
     private readonly HaikuLine[] lines;
     private const int lineCount = 3;
+    private const int expectedCsvLines = 4;
     private void ValidateLineIndex(int line)
     {
         if (line <= 0 || line > 3) throw new LineOutOfRangeException();
@@ -14,6 +15,51 @@ public class Haiku
     public List<Effect> Effects { get; }
 
     // CONSTRUCTOR
+    public Haiku(string csvPath)
+    {
+        // init stream reader
+        var reader = new StreamReader(csvPath);
+        var currentLine = "";
+        var csvLines = new List<string>();
+
+        // read csv file
+        do
+        {
+            currentLine = reader.ReadLine();
+            if (currentLine != null) csvLines.Add(currentLine);
+        }
+        while (currentLine != null);
+        reader.Close();          
+        
+
+        // parse into haiku object
+        if (csvLines.Count < expectedCsvLines)
+        {
+            throw new InvalidCsvException("Csv file only contains " + csvLines.Count + " lines." +
+                "Expected: " + expectedCsvLines + " lines.");
+        }
+
+        var haikuName = csvLines[0];
+        var haikuKana = csvLines[1].Split(',');
+        var haikuSound = csvLines[2].Split(',');
+        var haikuMeaning = csvLines[3].Split(',');
+        lines = new HaikuLine[3];
+        
+        for (int lineN = 0; lineN < haikuKana.Length; lineN++)
+        {
+            var currentCharLine = haikuKana[lineN].ToCharArray();
+            var kanaThisLine = new List<Kana>();
+            for (int charN = 0; charN < currentCharLine.Length; charN++)
+            {
+                var newKana = new Kana(currentCharLine[charN]);
+                kanaThisLine.Add(newKana);
+            }
+            Debug.Assert(haikuKana != null);
+            Debug.Assert(haikuMeaning != null);
+            lines[lineN] = new HaikuLine(kanaThisLine.ToArray(), haikuMeaning[lineN]);
+            lines[lineN].SetLineNumber(to: lineN);
+        }
+    }
     public Haiku(HaikuLine[] lines, Effect[] effects)
     {
         if (lines.Length != lineCount) throw new LineOutOfRangeException("Haiku must always have 3 lines");

@@ -118,6 +118,7 @@ public class HaikuCollectionSystem : MonoBehaviour
     #endregion    
 
     #region Debug
+
     private void LogCollection(Kana kana)
     {
         Debug.Log("Collected a kana : " + kana + " " + KanaCollected + "/" + haiku.KanaCount());
@@ -126,8 +127,14 @@ public class HaikuCollectionSystem : MonoBehaviour
     {
         Debug.Log("Yay you finished the haiku: " + haiku + "! " +  "by collecting " + KanaCollected + " kana!");
     }
+
+    private const string testCsvFolder = "C:/Users/carlo/Documents/Programming/Kinetic Translation/Kinetic-Translation/Assets/Haiku Data/Resources/";
+    private const string testCsvPath = "Haiku_SummerGrasses.csv";
     private static Haiku TestHaiku()
     {
+        var newHaiku = new Haiku(testCsvFolder + testCsvPath);
+
+        /*
         var newLines = new HaikuLine[]
         {
             new HaikuLine(
@@ -156,6 +163,8 @@ public class HaikuCollectionSystem : MonoBehaviour
             }, "and glass gives off the scent"),
         };
         var newHaiku = new Haiku(newLines);
+        */
+
         /*
         Debug.Log(newHaiku);
         Debug.Log(newHaiku.KanaCount());
