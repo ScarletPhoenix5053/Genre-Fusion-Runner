@@ -60,6 +60,8 @@ public class ParkourPlayerController2 : MonoBehaviour
     [Header("Climb")]
     [SerializeField] private LayerMask climbMask;
     [SerializeField] private float maxClimbTime = 2f;
+    [SerializeField] private float jumpOffForce = 5f;
+    [SerializeField] private float climbSpeed = 5f;
 #pragma warning restore IDE0044
     private float climbTime = 0f;
     private bool wallInFront;
@@ -204,10 +206,7 @@ public class ParkourPlayerController2 : MonoBehaviour
 
                 // Try climb wall
                 {
-                    var wallCheckDist = .6f;
-                    var wallRay = new Ray(transform.position, transform.forward);
-                    wallInFront = Physics.Raycast(wallRay, out RaycastHit hit, wallCheckDist, climbMask, QueryTriggerInteraction.Ignore);
-                    Debug.DrawRay(transform.position, transform.forward * wallCheckDist);
+                    var hit = CheckForWallInFront();
 
                     if (Grounded) lastWall = null;
                     if (
@@ -308,14 +307,20 @@ public class ParkourPlayerController2 : MonoBehaviour
                 // Camera
                 UpdateCam();
 
-                // Climb
-                motionControllers.ActiveMotionController.MoveHorizontal(inputMotion);
-
-                // Jump off
-                if (jump)
                 {
-                    motionControllers.ActiveMotionController.Jump();
-                    SetStateToNormal();
+                    var cf = refs.CoalescingForce;
+
+                    // Climb
+                    motionControllers.ActiveMotionController.MoveHorizontal(inputMotion);
+                    cf.AddForce(ToForce.OverFixedTime(Vector3.up * climbSpeed * inputMotion.y));
+
+                    // Jump
+                    if (jump)
+                    {
+                        cf.AddForce(ToForce.Instant(Vector3.up * jumpOffForce));
+
+                        SetStateToNormal();
+                    }
                 }
 
                 // Manual fall-off
@@ -325,6 +330,7 @@ public class ParkourPlayerController2 : MonoBehaviour
                 // no more wall to climb
                 // or climb timer runs out
                 climbTime += Time.deltaTime;
+                CheckForWallInFront();
                 if (!wallInFront || (climbTime > maxClimbTime))
                 {
                     SetStateToNormal();
@@ -523,6 +529,18 @@ public class ParkourPlayerController2 : MonoBehaviour
             yield return new WaitForEndOfFrame();
         }*/
     }
+    #endregion
+
+    #region Wallclimb
+    private RaycastHit CheckForWallInFront()
+    {
+        var wallCheckDist = .6f;
+        var wallRay = new Ray(transform.position, transform.forward);
+        wallInFront = Physics.Raycast(wallRay, out RaycastHit hit, wallCheckDist, climbMask, QueryTriggerInteraction.Ignore);
+        Debug.DrawRay(transform.position, transform.forward * wallCheckDist);
+        return hit;
+    }
+
     #endregion
 
     #endregion
