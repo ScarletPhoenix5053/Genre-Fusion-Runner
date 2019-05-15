@@ -21,6 +21,7 @@ public class ParkourPlayerController2 : MonoBehaviour
     [SerializeField] private float groundFriction = 50f;
     [SerializeField] private float airFriction = 20f;
     [SerializeField] private float airStrafeForce = 2f;
+    [SerializeField] private float gravity = 22f;
     [Header("Walk")]
     [SerializeField] private float walkSpeed = 5f;
     [Header("Sprint")]
@@ -30,8 +31,6 @@ public class ParkourPlayerController2 : MonoBehaviour
     [SerializeField] protected float wallJumpForce = 6f;
     [SerializeField] private float lateralJumpForce = 1f;
 #pragma warning restore IDE0044
-
-    private PlayerMotionControl2 motionControllers;
 
     public float Speed => refs.CoalescingForce.Speed;
     protected bool Grounded => refs.GroundChecker.Grounded;
@@ -71,9 +70,13 @@ public class ParkourPlayerController2 : MonoBehaviour
 #pragma warning disable IDE0044
     [Header("Slide Settings")]
     [SerializeField] private float minSlideSpeed = 1f;
+    [SerializeField] private float slideStartForce = 15f;
+    [SerializeField] private float slideStartTime = 1f;
     [SerializeField] private float slideStrafeMaxSpeed = 3f;
     [SerializeField] private float slideStrafeStrength = 0.3f;
     [SerializeField] private float slideFriction = 35f;
+
+    private IEnumerator slideBoostRoutine;
 #pragma warning restore IDE0044
     #endregion
 
@@ -92,15 +95,6 @@ public class ParkourPlayerController2 : MonoBehaviour
 
         // Create and/or init sub-components
         inputGroup = new KBMInputGroup(refs.PlayerPrefrences);
-        motionControllers = new PlayerMotionControl2(
-            inputGroup,
-            new BaseMotionController2[4]
-            {
-                refs.GroundedMotionController,
-                refs.WallrunMotionController,
-                refs.SlideMotionController,
-                refs.WallClimbMotionController
-            });
 
         // Subscribe to wallrun detector
         wallRunner = GetComponent<WallRunDetector>();
@@ -191,7 +185,6 @@ public class ParkourPlayerController2 : MonoBehaviour
                     }
 
                 }
-
                 // Try wallrun
                 if (!Grounded && Speed > wallrunMinStartSpeed)
                 {
@@ -365,14 +358,25 @@ public class ParkourPlayerController2 : MonoBehaviour
     }
     private void FixedUpdate()
     {
-        // If grounded, use ground friction
-        if (Grounded && state == CharacterState.Normal)
+        if (state == CharacterState.Normal)
         {
-            refs.Drag.DragConstant = groundFriction;
+            // If grounded, use ground friction
+            if (Grounded && state == CharacterState.Normal)
+            {
+                refs.Drag.DragConstant = groundFriction;
+            }
+            else
+            {
+                refs.Drag.DragConstant = airFriction;
+            }
         }
-        else
+        // Try grav
         {
-            refs.Drag.DragConstant = airFriction;
+            var cf = refs.CoalescingForce;
+            if (Grounded || state != CharacterState.Normal) return;
+
+            var gravForce = ToForce.OverFixedTime(Vector3.down * gravity);
+            cf.AddForce(gravForce);
         }
     }
     #endregion
@@ -408,14 +412,18 @@ public class ParkourPlayerController2 : MonoBehaviour
     {
         if (newState == state) return;
 
+        // Cancel slide speed boost on change
+        if (newState != CharacterState.Slide) refs.CoalescingForce.CancelForceOverTime(slideBoostRoutine);
+
+        // Reset climb time on change
         if (newState != CharacterState.Climbing) climbTime = 0;
+
         state = newState;
     }
 
     private void SetStateToNormal()
     {
         SetState(CharacterState.Normal);
-        motionControllers.SetActiveMotionController(CharacterState.Normal);
         refs.Drag.DragConstant = groundFriction;
 
         CamControlsRotation(true);
@@ -424,7 +432,6 @@ public class ParkourPlayerController2 : MonoBehaviour
     private void SetStateToWallRun()
     {
         SetState(CharacterState.Wallrun);
-        motionControllers.SetActiveMotionController(CharacterState.Wallrun);
         refs.Drag.DragConstant = wallrunFriction;
 
         // Find new pos & rotation to interpolate to
@@ -439,7 +446,10 @@ public class ParkourPlayerController2 : MonoBehaviour
     private void SetStateToSlide()
     {
         SetState(CharacterState.Slide);
-        motionControllers.SetActiveMotionController(CharacterState.Slide);
+
+        // speed boost
+        var startForce = -(ToForce.OverFixedTime(transform.forward * slideStartForce));
+        slideBoostRoutine = refs.CoalescingForce.AddForceOverTime(-startForce, slideStartTime);
 
         CamControlsRotation(false);
         refs.Cam.DipCamera(true);
@@ -448,7 +458,6 @@ public class ParkourPlayerController2 : MonoBehaviour
     private void SetStateToWallClimb()
     {
         SetState(CharacterState.Climbing);
-        motionControllers.SetActiveMotionController(CharacterState.Climbing);
         refs.Drag.DragConstant = groundFriction;
 
         // Cancel vertical momentum
@@ -582,7 +591,6 @@ public class ParkourPlayerController2 : MonoBehaviour
     private void UpdateDebugOverlayLogs()
     {
         DebugOverlay.UpdateLog(idCharState, state.ToString());
-        DebugOverlay.UpdateLog(idMoveState, motionControllers.ActiveMotionControllerId.ToString());
         DebugOverlay.UpdateLog(idCharSpeed, Speed.ToString());
         DebugOverlay.UpdateLog(idCharFwdSpeed, refs.CoalescingForce.ForwardVel.ToString());
     }

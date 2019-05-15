@@ -6160,18 +6160,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 311
   minimumNormalDeviation: 10
---- !u!114 &3948942227527380707
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3948942227527380710}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ff489c5bad0a248498dfe161817839b0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &3948942227527380708
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6213,11 +6201,6 @@ GameObject:
   - component: {fileID: 3948942227527380731}
   - component: {fileID: 3948942227527380729}
   - component: {fileID: 3948942227527380735}
-  - component: {fileID: 3948942227527380728}
-  - component: {fileID: 3948942227527380733}
-  - component: {fileID: 3948942227527380734}
-  - component: {fileID: 3948942227527380732}
-  - component: {fileID: 3948942227527380707}
   - component: {fileID: 3948942227527380708}
   - component: {fileID: 3948942227527380709}
   - component: {fileID: 3948942227527380718}
@@ -6254,30 +6237,6 @@ MonoBehaviour:
   surfaceSphereCastRadius: 0.1
   surfaceSphereCastDist: 20
   surfaceCheckRadius: 0.2
---- !u!114 &3948942227527380728
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3948942227527380710}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: db13ef9b0e2cff441ae710d9a89b8ca4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sprintForce: 13
-  jumpForce: 8
-  lateralJumpForce: 3
-  airStrafeForce: 2
-  gravityForce: 22
-  instantAcceleration: 0.923
-  friction: 50
-  airFriction: 2
-  strafeForce: 3
-  walkForce: 5
-  walkSpeed: 5
-  sprintMultiplier: 1.5
 --- !u!114 &3948942227527380729
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6307,10 +6266,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Cam: {fileID: 1356320224}
   CoalescingForce: {fileID: 3948942227527380729}
-  GroundedMotionController: {fileID: 3948942227527380728}
-  SlideMotionController: {fileID: 3948942227527380734}
-  WallrunMotionController: {fileID: 3948942227527380733}
-  WallClimbMotionController: {fileID: 3948942227527380732}
+  GroundedMotionController: {fileID: 0}
+  SlideMotionController: {fileID: 0}
+  WallrunMotionController: {fileID: 0}
+  WallClimbMotionController: {fileID: 0}
   GroundChecker: {fileID: 3948942227527380718}
   MainCollider: {fileID: 3948942228261893498}
   Drag: {fileID: 3948942227527380735}
@@ -6329,8 +6288,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   instantAcceleration: 0.867
   groundFriction: 50
-  airFriction: 20
-  airStrafeForce: 2
+  airFriction: 10
+  airStrafeForce: 2.2
+  gravity: 22
   walkSpeed: 5
   sprintExtraSpeed: 5
   jumpForce: 12
@@ -6347,67 +6307,14 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 311
   maxClimbTime: 1
-  jumpOffForce: 4
+  jumpOffForce: 6
   climbSpeed: 5
   minSlideSpeed: 8
+  slideStartForce: 15
+  slideStartTime: 1
   slideStrafeMaxSpeed: 3
   slideStrafeStrength: 0.3
   slideFriction: 35
---- !u!114 &3948942227527380732
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3948942227527380710}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dc9d3f8e2f657d74f88139ac69ee70eb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sprintForce: 0
-  jumpForce: 0
-  lateralJumpForce: 2
-  jumpOffForce: 5
-  climbSpeed: 3
---- !u!114 &3948942227527380733
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3948942227527380710}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5f271b418282b554085bd175996460e8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sprintForce: 0
-  jumpForce: 6
-  lateralJumpForce: 6
-  wallrunStartSpeed: 12
-  friction: 35
---- !u!114 &3948942227527380734
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3948942227527380710}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0eab595574594404ca75dac85800d5e5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sprintForce: 0
-  jumpForce: 6
-  lateralJumpForce: 2
-  slideStartForce: 15
-  slideStartTime: 0.5
-  maxSlideSpeed: 90
-  friction: 15
-  slideStrafeMaxSpeed: 3
-  slideStrafeStrength: 0.3
 --- !u!114 &3948942227527380735
 MonoBehaviour:
   m_ObjectHideFlags: 0
