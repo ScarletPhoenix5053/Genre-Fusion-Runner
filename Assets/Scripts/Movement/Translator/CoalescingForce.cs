@@ -88,7 +88,11 @@ public class CoalescingForce : MonoBehaviour
         StartCoroutine(forceOverTimeRoutine);
         return forceOverTimeRoutine;
     }
-    public void CancelForceOverTime(IEnumerator routine) => StopCoroutine(routine);
+    public void CancelForceOverTime(IEnumerator routine)
+    {
+        if (routine == null) return;
+        StopCoroutine(routine);
+    }
     private IEnumerator forceOverTimeRoutine;
     private IEnumerator ForceOverTimeRoutine(Vector3 force, float t)
     {        
