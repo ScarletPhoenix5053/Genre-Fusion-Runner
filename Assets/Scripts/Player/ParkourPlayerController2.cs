@@ -14,6 +14,26 @@ public class ParkourPlayerController2 : MonoBehaviour
     #endregion
 
     #region Motion
+
+#pragma warning disable IDE0044
+    [Header("General Motion")]
+    [SerializeField] [Range(0, 1)] private float instantAcceleration = 0.5f;
+    [SerializeField] private float friction = 50f;
+    [SerializeField] private float airFriction = 20f;
+    [SerializeField] private float strafeForce = 3f;
+    [SerializeField] private float airStrafeForce = 2f;
+    [SerializeField] private float gravityForce = 2f;
+    [Header("Walk")]
+    [SerializeField] private float walkForce = 5f;
+    [SerializeField] private float walkSpeed = 5f;
+    [Header("Sprint")]
+    [SerializeField] private float sprintForce;
+    [SerializeField] private float sprintMultiplier = 1.5f;
+    [Header("Jump")]
+    [SerializeField] protected float jumpForce = 12f;
+    [SerializeField] private float lateralJumpForce = 2f;
+#pragma warning restore IDE0044
+
     private PlayerMotionControl2 motionControllers;
     private Averager averageFwdSpeedTracker = new Averager(288);
     public float Speed => averageFwdSpeedTracker.GetAverage();
@@ -93,7 +113,7 @@ public class ParkourPlayerController2 : MonoBehaviour
     private void Update()
     {
         // Get input
-        var motion = inputGroup.GetAxisMotion();
+        var inputMotion = inputGroup.GetAxisMotion();
         var sprint = inputGroup.GetInputSprint();
         var jump = inputGroup.GetInputJump();
         var crouch = inputGroup.GetInputCrouch();
@@ -108,11 +128,65 @@ public class ParkourPlayerController2 : MonoBehaviour
                 UpdateCam();
 
                 // Move
-                motionControllers.ActiveMotionController.Sprint(sprint);
-                motionControllers.ActiveMotionController.MoveHorizontal(motion);
+                {
+                    //motionControllers.ActiveMotionController.Sprint(sprint);
+                    //motionControllers.ActiveMotionController.MoveHorizontal(motion);
 
-                // Try Jump
-                if (jump && Grounded) motionControllers.ActiveMotionController.Jump(motion);
+
+                    // temp refs
+                    var cf = refs.CoalescingForce;
+                    
+                    // Create force vector
+                    var motion = new Vector3(inputMotion.x, 0, inputMotion.y);
+                    Vector3 motionForce;
+                    if (Grounded)
+                    {
+                        motionForce = ToForce.OverFixedTime(motion * walkSpeed);
+                    }
+                    else
+                    {
+                        motionForce = ToForce.OverFixedTime(motion * airStrafeForce);
+                    }
+                    
+                    // Instant accel/decel
+                    var instantAccelThreshold = walkSpeed * instantAcceleration;
+                    if (cf.Speed < instantAccelThreshold)
+                    {
+                        if (inputMotion != Vector2.zero)
+                        {
+                            cf.SetVelocity(transform.TransformDirection(motion * instantAccelThreshold));
+                        }
+                        else
+                        {
+                            cf.ResetVelocityX();
+                            cf.ResetVelocityZ();
+                        }
+                    }
+
+                    // Sprint boost
+                    if (Grounded && sprint)
+                    {
+                        motionForce += ToForce.OverFixedTime(Vector3.forward * sprintForce);
+                    }
+
+                    // Limit force??
+                    motionForce = Vector3.ClampMagnitude(motionForce, walkSpeed * ToForce.forceMultiplicationFactor);
+
+                    // Apply
+                    motionForce = transform.TransformDirection(motionForce);
+                    cf.AddForce(motionForce);
+
+                    // Try jump
+                    if (jump && Grounded)
+                    {
+                        cf.AddForce(ToForce.Instant(Vector3.up * jumpForce));
+
+                        var lateralForce = ToForce.Instant(inputMotion.Flatten().normalized * lateralJumpForce);
+                        lateralForce = transform.TransformDirection(lateralForce);
+                        cf.AddForce(lateralForce);
+                    }
+
+                }
 
                 // Try wallrun
                 if (!Grounded && Speed > wallrunMinStartSpeed)
@@ -185,12 +259,12 @@ public class ParkourPlayerController2 : MonoBehaviour
                 UpdateCam(0.1f);
 
                 // Strafe
-                motionControllers.ActiveMotionController.MoveHorizontal(motion);
+                motionControllers.ActiveMotionController.MoveHorizontal(inputMotion);
 
                 // Jump
                 if (jump)
                 {
-                    motionControllers.ActiveMotionController.Jump(motion);
+                    motionControllers.ActiveMotionController.Jump(inputMotion);
                     SetStateToNormal();
                 }
 
@@ -212,7 +286,7 @@ public class ParkourPlayerController2 : MonoBehaviour
                 UpdateCam();
 
                 // Climb
-                motionControllers.ActiveMotionController.MoveHorizontal(motion);
+                motionControllers.ActiveMotionController.MoveHorizontal(inputMotion);
 
                 // Jump off
                 if (jump)

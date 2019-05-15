@@ -77,9 +77,9 @@ public abstract class BaseMotionController2 : MonoBehaviour
     {
         Jump();
 
-        var jumpForce = ToForceInstant(dir.Flatten().normalized * lateralJumpForce);
-        jumpForce = transform.TransformDirection(jumpForce);
-        cf.AddForce(jumpForce);
+        var lateralForce = ToForceInstant(dir.Flatten().normalized * lateralJumpForce);
+        lateralForce = transform.TransformDirection(lateralForce);
+        cf.AddForce(lateralForce);
     }
     #endregion
 
