@@ -63,10 +63,32 @@ public class ParkourPlayerController2 : MonoBehaviour
 
     private void Awake()
     {
-        GetRefComponent();
-        CreateObjectsAndInjectDependencies();
-        SubscribeToWallrunDetector();
-        CreateOverlayLogs();
+        // Locate refs component
+        refs = GetComponent<PlayerRefs2>();
+
+        // Create and/or init sub-components
+        inputGroup = new KBMInputGroup(refs.PlayerPrefrences);
+        motionControllers = new PlayerMotionControl2(
+            inputGroup,
+            new BaseMotionController2[4]
+            {
+                refs.GroundedMotionController,
+                refs.WallrunMotionController,
+                refs.SlideMotionController,
+                refs.WallClimbMotionController
+            });
+
+        // Subscribe to wallrun detector
+        wallRunner = GetComponent<WallRunDetector>();
+        if (wallRunner == null) Debug.LogWarning("Cannot find a wallrun detector, movement may not work as intended", this);
+        else
+        {
+            wallRunner.OnNewWallDetected += StartWallrun;
+            wallRunner.OnDetatchFromWall += EndWallRun;
+        }
+
+        // Initialize debugging stuff
+        CreateDebugOverlayLogs();
     }
     private void Update()
     {
@@ -218,7 +240,7 @@ public class ParkourPlayerController2 : MonoBehaviour
             default: throw new System.NotImplementedException("Please impliment interactions for state: " + state.ToString());
         }
 
-        UpdateOverlayLogs();
+        UpdateDebugOverlayLogs();
 
         // track speed
         averageFwdSpeedTracker.Track(refs.CoalescingForce.ForwardVel);
@@ -236,20 +258,9 @@ public class ParkourPlayerController2 : MonoBehaviour
     #region Init
     private void GetRefComponent()
     {
-        refs = GetComponent<PlayerRefs2>();
     }
     private void CreateObjectsAndInjectDependencies()
     {
-        inputGroup = new KBMInputGroup(refs.PlayerPrefrences);
-        motionControllers = new PlayerMotionControl2(
-            inputGroup,
-            new BaseMotionController2[4]
-            {
-                refs.GroundedMotionController,
-                refs.WallrunMotionController,
-                refs.SlideMotionController,
-                refs.WallClimbMotionController
-            });
     }
     #endregion
 
@@ -318,13 +329,6 @@ public class ParkourPlayerController2 : MonoBehaviour
     #region Wallrun
     private void SubscribeToWallrunDetector()
     {
-        wallRunner = GetComponent<WallRunDetector>();
-        if (wallRunner == null) Debug.LogWarning("Cannot find a wallrun detector, movement may not work as intended", this);
-        else
-        {
-            wallRunner.OnNewWallDetected += StartWallrun;
-            wallRunner.OnDetatchFromWall += EndWallRun;
-        }
     }
     private void LeapFromWallrun(float fwdSpeed)
     {
@@ -431,15 +435,15 @@ public class ParkourPlayerController2 : MonoBehaviour
     private const string idMoveState = "Character Motion Controller";
     private const string idCharSpeed = "Character Speed";
     private const string idCharFwdSpeed = "Character Fwd Speed";
-    private static void CreateOverlayLogs()
+
+    private static void CreateDebugOverlayLogs()
     {
         DebugOverlay.CreateLog(idCharState);
         DebugOverlay.CreateLog(idMoveState);
         DebugOverlay.CreateLog(idCharSpeed);
         DebugOverlay.CreateLog(idCharFwdSpeed);
     }
-
-    private void UpdateOverlayLogs()
+    private void UpdateDebugOverlayLogs()
     {
         DebugOverlay.UpdateLog(idCharState, state.ToString());
         DebugOverlay.UpdateLog(idMoveState, motionControllers.ActiveMotionControllerId.ToString());
