@@ -36,8 +36,8 @@ public class SlideMotionController2 : BaseMotionController2
     #region Inspector
 #pragma warning disable
     [Header("Strafe")]
-    [SerializeField] private float strafeMaxSpeed = 3f;
-    [SerializeField] private float strafeStrength = 0.3f;
+    [SerializeField] private float slideStrafeMaxSpeed = 3f;
+    [SerializeField] private float slideStrafeStrength = 0.3f;
 #pragma warning restore
     #endregion
     public override void MoveHorizontal(Vector2 input)
@@ -45,14 +45,14 @@ public class SlideMotionController2 : BaseMotionController2
         base.MoveHorizontal(input);
 
         CreateForcesByInput();
-        LimitMotionForce(to: strafeMaxSpeed);
+        LimitMotionForce(to: slideStrafeMaxSpeed);
 
         ApplyHorizontalMotionForce();
     }
     protected override void CreateForcesByInput()
     {
         MapInputToMotion();
-        CreateMotionForce(strafeStrength);
+        CreateMotionForce(slideStrafeStrength);
     }
     protected override void MapInputToMotion()
     {

@@ -36,7 +36,7 @@ public class ParkourPlayerController2 : MonoBehaviour
 
     private PlayerMotionControl2 motionControllers;
     private Averager averageFwdSpeedTracker = new Averager(288);
-    public float Speed => averageFwdSpeedTracker.GetAverage();
+    public float Speed => motionControllers.ActiveMotionController.Speed;
     protected bool Grounded => refs.GroundChecker.Grounded;
     #endregion
 
@@ -70,6 +70,8 @@ public class ParkourPlayerController2 : MonoBehaviour
 #pragma warning disable IDE0044
     [Header("Slide Settings")]
     [SerializeField] private float minSlideSpeed = 1f;
+    [SerializeField] private float slideStrafeMaxSpeed = 3f;
+    [SerializeField] private float slideStrafeStrength = 0.3f;
 #pragma warning restore IDE0044
     #endregion
 
@@ -255,22 +257,43 @@ public class ParkourPlayerController2 : MonoBehaviour
 
             case CharacterState.Slide:
                 #region Slide State
+
                 // Camera
                 UpdateCam(0.1f);
 
-                // Strafe
-                motionControllers.ActiveMotionController.MoveHorizontal(inputMotion);
-
-                // Jump
-                if (jump)
                 {
-                    motionControllers.ActiveMotionController.Jump(inputMotion);
-                    SetStateToNormal();
+                    var cf = refs.CoalescingForce;
+
+                    // Strafe
+                    //motionControllers.ActiveMotionController.MoveHorizontal(inputMotion);
+
+                    // Create force
+                    var motion = new Vector3(inputMotion.x, 0, 0);
+                    Vector3 motionForce = ToForce.OverFixedTime(motion * slideStrafeStrength);
+
+                    // Limit force??
+                    motionForce = Vector3.ClampMagnitude(motionForce, slideStrafeMaxSpeed * ToForce.forceMultiplicationFactor);
+                    
+                    // Apply
+                    motionForce = transform.TransformDirection(motionForce);
+                    cf.AddForce(motionForce);
+
+                    // Jump
+                    if (jump && Grounded)
+                    {
+                        cf.AddForce(ToForce.Instant(Vector3.up * jumpForce));
+
+                        var lateralForce = ToForce.Instant(inputMotion.Flatten().normalized * lateralJumpForce);
+                        lateralForce = transform.TransformDirection(lateralForce);
+                        cf.AddForce(lateralForce);
+
+                        SetStateToNormal();
+                    }
                 }
 
                 // End slide if too slow or airborne
                 if (
-                    ((motionControllers.ActiveMotionController.Speed < minSlideSpeed) && !inputGroup.GetInputCrouch())
+                    ((Speed < minSlideSpeed) && !inputGroup.GetInputCrouch())
                     || !Grounded
                     )
                 {
