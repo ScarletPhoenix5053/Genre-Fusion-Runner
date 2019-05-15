@@ -6327,16 +6327,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08bf1982445415c4b907e368b67871b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  instantAcceleration: 0.867
+  groundFriction: 50
+  airFriction: 20
+  airStrafeForce: 2
+  walkSpeed: 5
+  sprintExtraSpeed: 5
+  jumpForce: 12
+  wallJumpForce: 6
+  lateralJumpForce: 2
   wallrunCamTilt: 5
   wallrunMinStartSpeed: 10
   wallrunMinStaySpeed: 5
   wallrunLeapBoost: 2
   wallrunAdjustTime: 0.5
+  wallrunStartSpeed: 12
+  wallrunFriction: 35
   climbMask:
     serializedVersion: 2
     m_Bits: 311
   maxClimbTime: 1
+  jumpOffForce: 4
+  climbSpeed: 5
   minSlideSpeed: 8
+  slideStrafeMaxSpeed: 3
+  slideStrafeStrength: 0.3
+  slideFriction: 35
 --- !u!114 &3948942227527380732
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6390,8 +6406,8 @@ MonoBehaviour:
   slideStartTime: 0.5
   maxSlideSpeed: 90
   friction: 15
-  strafeMaxSpeed: 3
-  strafeStrength: 1.5
+  slideStrafeMaxSpeed: 3
+  slideStrafeStrength: 0.3
 --- !u!114 &3948942227527380735
 MonoBehaviour:
   m_ObjectHideFlags: 0

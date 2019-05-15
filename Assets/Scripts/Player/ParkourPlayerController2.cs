@@ -20,23 +20,20 @@ public class ParkourPlayerController2 : MonoBehaviour
     [SerializeField] [Range(0, 1)] private float instantAcceleration = 0.5f;
     [SerializeField] private float groundFriction = 50f;
     [SerializeField] private float airFriction = 20f;
-    [SerializeField] private float strafeForce = 3f;
     [SerializeField] private float airStrafeForce = 2f;
-    [SerializeField] private float gravityForce = 2f;
     [Header("Walk")]
-    [SerializeField] private float walkForce = 5f;
     [SerializeField] private float walkSpeed = 5f;
     [Header("Sprint")]
-    [SerializeField] private float sprintForce;
-    [SerializeField] private float sprintMultiplier = 1.5f;
+    [SerializeField] private float sprintExtraSpeed = 5f;
     [Header("Jump")]
     [SerializeField] protected float jumpForce = 12f;
-    [SerializeField] private float lateralJumpForce = 2f;
+    [SerializeField] protected float wallJumpForce = 6f;
+    [SerializeField] private float lateralJumpForce = 1f;
 #pragma warning restore IDE0044
 
     private PlayerMotionControl2 motionControllers;
-    private Averager averageFwdSpeedTracker = new Averager(288);
-    public float Speed => motionControllers.ActiveMotionController.Speed;
+
+    public float Speed => refs.CoalescingForce.Speed;
     protected bool Grounded => refs.GroundChecker.Grounded;
     #endregion
 
@@ -173,7 +170,7 @@ public class ParkourPlayerController2 : MonoBehaviour
                     // Sprint boost
                     if (Grounded && sprint)
                     {
-                        motionForce += ToForce.OverFixedTime(Vector3.forward * sprintForce);
+                        motionForce += ToForce.OverFixedTime(Vector3.forward * sprintExtraSpeed);
                     }
 
                     // Limit force??
@@ -255,8 +252,13 @@ public class ParkourPlayerController2 : MonoBehaviour
                     // Try Jump
                     if (jump)
                     {
+                        cf.AddForce(ToForce.Instant(Vector3.up * wallJumpForce));
+
                         var jumpDirection = new Vector2(-wallDirection, 0);
-                        motionControllers.ActiveMotionController.Jump(jumpDirection);
+                        var lateralForce = ToForce.Instant(jumpDirection * jumpOffForce);
+                        lateralForce = transform.TransformDirection(lateralForce);
+                        cf.AddForce(lateralForce);
+
                         SetStateToNormal();
                         wallRunner.DetatchFromWall();
                     }
@@ -328,7 +330,6 @@ public class ParkourPlayerController2 : MonoBehaviour
                     var cf = refs.CoalescingForce;
 
                     // Climb
-                    motionControllers.ActiveMotionController.MoveHorizontal(inputMotion);
                     cf.AddForce(ToForce.OverFixedTime(Vector3.up * climbSpeed * inputMotion.y));
 
                     // Jump
@@ -361,9 +362,6 @@ public class ParkourPlayerController2 : MonoBehaviour
         }
 
         UpdateDebugOverlayLogs();
-
-        // track speed
-        averageFwdSpeedTracker.Track(refs.CoalescingForce.ForwardVel);
     }
     private void FixedUpdate()
     {
@@ -462,15 +460,6 @@ public class ParkourPlayerController2 : MonoBehaviour
     #endregion
 
     #region Wallrun
-    private void SubscribeToWallrunDetector()
-    {
-    }
-    private void LeapFromWallrun(float fwdSpeed)
-    {
-        // var lateralBoost = new Vector2(wallrunLeapBoost * -wallDirection, fwdSpeed);
-        var lateralBoost = new Vector2(0, wallrunLeapBoost);
-        motionControllers.ActiveMotionController.Jump(lateralBoost);
-    }
 
     private void StartWallrun(BoxCollider newWallTransform, int side)
     {
