@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e754b709a9b1279448cd344faae95a68, type: 3}
+  m_Name: Player Motion Default
+  m_EditorClassIdentifier: 
+  InstantWalkAcceleration: 0.9
+  WalkSpeed: 5
+  SprintExtraSpeed: 5
+  GroundedFriction: 50
+  AirFriction: 10
+  WallrunFriction: 35
+  SlideFriction: 35
+  GroundedJumpStrength: 12
+  GroundedJumpBoost: 2
+  WallJumpStrength: 6
+  WallJumpBoost: 6
+  ClimbJumpForce: 4
+  Gravity: 22
+  AirStrafeForce: 2.2
+  WallrunSpeed: 12
+  WallrunMinStartSpeed: 5
+  WallrunMinStaySpeed: 1
+  ClimbMaxDuration: 1
+  ClimbSpeed: 5
+  SlideMinSpeed: 8
+  SlideStartForce: 15
+  SlideStartTime: 1
+  SlideStrafeMaxSpeed: 3
+  SlideStrafeStrength: 0.3

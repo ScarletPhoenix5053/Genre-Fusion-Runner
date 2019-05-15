@@ -103,12 +103,12 @@ GameObject:
   - component: {fileID: 3948942229280379530}
   - component: {fileID: 3948942229280379536}
   - component: {fileID: 3948942229280379537}
+  - component: {fileID: 3948942229280379528}
   - component: {fileID: 3948942229280379539}
   - component: {fileID: 3948942229280379541}
   - component: {fileID: 3948942229280379534}
   - component: {fileID: 3948942229280379535}
   - component: {fileID: 3948942229280379524}
-  - component: {fileID: 3948942229280379528}
   m_Layer: 9
   m_Name: Neo Character Contoller
   m_TagString: Untagged
@@ -165,35 +165,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08bf1982445415c4b907e368b67871b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  instantAcceleration: 0.891
-  groundFriction: 50
-  airFriction: 10
-  airStrafeForce: 2.2
-  gravity: 22
-  walkSpeed: 5
-  sprintExtraSpeed: 5
-  jumpForce: 12
-  wallJumpForce: 6
-  lateralJumpForce: 2
+  prefs: {fileID: 11400000, guid: 810ac792cdb4d2d4083bd6327b515dca, type: 2}
+  motion: {fileID: 11400000, guid: d1276d6289358d54fb76b41129c0ee27, type: 2}
   wallrunCamTilt: 5
-  wallrunMinStartSpeed: 10
-  wallrunMinStaySpeed: 5
-  wallrunLeapBoost: 2
-  wallrunAdjustTime: 0.5
-  wallrunStartSpeed: 12
-  wallrunFriction: 35
+  wallrunStickTime: 0.5
   climbMask:
     serializedVersion: 2
     m_Bits: 311
-  maxClimbTime: 1
-  jumpOffForce: 6
-  climbSpeed: 5
   minSlideSpeed: 8
   slideStartForce: 15
   slideStartTime: 1
   slideStrafeMaxSpeed: 3
   slideStrafeStrength: 0.3
   slideFriction: 35
+--- !u!114 &3948942229280379528
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3948942229280379532}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 960d30470d00bad408e2d3902077abb8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wallCheckDistance: 2
+  wallDetectionMask:
+    serializedVersion: 2
+    m_Bits: 311
+  minimumNormalDeviation: 10
 --- !u!114 &3948942229280379539
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -276,20 +277,3 @@ MonoBehaviour:
   surfaceSphereCastRadius: 0.1
   surfaceSphereCastDist: 20
   surfaceCheckRadius: 0.2
---- !u!114 &3948942229280379528
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3948942229280379532}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 960d30470d00bad408e2d3902077abb8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  wallCheckDistance: 2
-  wallDetectionMask:
-    serializedVersion: 2
-    m_Bits: 311
-  minimumNormalDeviation: 10
