@@ -8,48 +8,54 @@ public class ParkourPlayerController2 : MonoBehaviour
 {
     #region Variables
 
-    // INPUT AND PREFS
+    #region Input and Prefs
     private IPlayerInput inputGroup;
     private PlayerRefs2 refs;
+    #endregion
 
-    // MOTION
+    #region Motion
     private PlayerMotionControl2 motionControllers;
     private Averager averageFwdSpeedTracker = new Averager(288);
     public float Speed => averageFwdSpeedTracker.GetAverage();
     protected bool Grounded => refs.GroundChecker.Grounded;
+    #endregion
 
-
-    // WALLRUN
+    #region Wallrun
+#pragma warning disable IDE0044
     [Header("Wallrun Settings")]
-#pragma warning disable
     [SerializeField] private float wallrunCamTilt = 5f;
     [SerializeField] private float wallrunMinStartSpeed = 5f;
     [SerializeField] private float wallrunMinStaySpeed = 0f;
     [SerializeField] private float wallrunLeapBoost = 10f;
     [SerializeField] private float wallrunAdjustTime = 0.5f;
-#pragma warning restore
+#pragma warning restore IDE0044
 
     private int wallDirection = 0;
     private WallRunDetector wallRunner;
     private IEnumerator smoothTranslateRoutine;
+    #endregion
 
-
-    // WALLCLIMB
+    #region WallClimb
+#pragma warning disable IDE0044
     [Header("Climb")]
     [SerializeField] private LayerMask climbMask;
     [SerializeField] private float maxClimbTime = 2f;
+#pragma warning restore IDE0044
     private float climbTime = 0f;
     private bool wallInFront;
     private Collider lastWall;
+    #endregion
 
-
-    // SLIDE
+    #region Slide
+#pragma warning disable IDE0044
     [Header("Slide Settings")]
     [SerializeField] private float minSlideSpeed = 1f;
+#pragma warning restore IDE0044
+    #endregion
 
-    
-    // STATE
+    #region State
     private CharacterState state = CharacterState.Normal;
+    #endregion
 
     #endregion
 
@@ -102,8 +108,7 @@ public class ParkourPlayerController2 : MonoBehaviour
                 {
                     var wallCheckDist = .6f;
                     var wallRay = new Ray(transform.position, transform.forward);
-                    RaycastHit hit;
-                    wallInFront = Physics.Raycast(wallRay, out hit, wallCheckDist, climbMask, QueryTriggerInteraction.Ignore);
+                    wallInFront = Physics.Raycast(wallRay, out RaycastHit hit, wallCheckDist, climbMask, QueryTriggerInteraction.Ignore);
                     Debug.DrawRay(transform.position, transform.forward * wallCheckDist);
 
                     if (Grounded) lastWall = null;
@@ -226,10 +231,9 @@ public class ParkourPlayerController2 : MonoBehaviour
 
 
     #endregion
-
     #region Private Methods
 
-    // INIT
+    #region Init
     private void GetRefComponent()
     {
         refs = GetComponent<PlayerRefs2>();
@@ -247,9 +251,9 @@ public class ParkourPlayerController2 : MonoBehaviour
                 refs.WallClimbMotionController
             });
     }
+    #endregion
 
-
-    // CAMERA
+    #region Camera
     private void UpdateCam(float lag = 0f)
     {
         var look = inputGroup.GetAxisLook();
@@ -257,9 +261,9 @@ public class ParkourPlayerController2 : MonoBehaviour
     }
     private void TiltCam(float angle) => refs.Cam.SetTilt(angle);
     private void CamControlsRotation(bool value) => refs.Cam.ControlTargetRotation = value;
+    #endregion
 
-
-    // STATE
+    #region State
     private void SetState(CharacterState newState)
     {
         if (newState == state) return;
@@ -309,9 +313,9 @@ public class ParkourPlayerController2 : MonoBehaviour
         CamControlsRotation(false);
         refs.Cam.DipCamera(false);
     }
+    #endregion
 
-
-    // WALLRUN
+    #region Wallrun
     private void SubscribeToWallrunDetector()
     {
         wallRunner = GetComponent<WallRunDetector>();
@@ -418,6 +422,8 @@ public class ParkourPlayerController2 : MonoBehaviour
             yield return new WaitForEndOfFrame();
         }*/
     }
+    #endregion
+
     #endregion
 
     #region Debugging
