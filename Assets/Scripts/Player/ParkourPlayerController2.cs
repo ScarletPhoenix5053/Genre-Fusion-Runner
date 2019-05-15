@@ -577,14 +577,12 @@ public class ParkourPlayerController2 : MonoBehaviour
 
     #region Debugging
     private const string idCharState = "Character State";
-    private const string idMoveState = "Character Motion Controller";
     private const string idCharSpeed = "Character Speed";
     private const string idCharFwdSpeed = "Character Fwd Speed";
 
     private static void CreateDebugOverlayLogs()
     {
         DebugOverlay.CreateLog(idCharState);
-        DebugOverlay.CreateLog(idMoveState);
         DebugOverlay.CreateLog(idCharSpeed);
         DebugOverlay.CreateLog(idCharFwdSpeed);
     }

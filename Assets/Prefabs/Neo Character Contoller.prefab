@@ -165,7 +165,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08bf1982445415c4b907e368b67871b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  instantAcceleration: 0.867
+  instantAcceleration: 0.891
   groundFriction: 50
   airFriction: 10
   airStrafeForce: 2.2
