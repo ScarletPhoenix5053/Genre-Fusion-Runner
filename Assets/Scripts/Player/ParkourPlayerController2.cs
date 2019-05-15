@@ -18,7 +18,7 @@ public class ParkourPlayerController2 : MonoBehaviour
 #pragma warning disable IDE0044
     [Header("General Motion")]
     [SerializeField] [Range(0, 1)] private float instantAcceleration = 0.5f;
-    [SerializeField] private float friction = 50f;
+    [SerializeField] private float groundFriction = 50f;
     [SerializeField] private float airFriction = 20f;
     [SerializeField] private float strafeForce = 3f;
     [SerializeField] private float airStrafeForce = 2f;
@@ -48,6 +48,8 @@ public class ParkourPlayerController2 : MonoBehaviour
     [SerializeField] private float wallrunMinStaySpeed = 0f;
     [SerializeField] private float wallrunLeapBoost = 10f;
     [SerializeField] private float wallrunAdjustTime = 0.5f;
+    [SerializeField] private float wallrunStartSpeed = 12f;
+    [SerializeField] private float wallrunFriction = 35f;
 #pragma warning restore IDE0044
 
     private int wallDirection = 0;
@@ -74,6 +76,7 @@ public class ParkourPlayerController2 : MonoBehaviour
     [SerializeField] private float minSlideSpeed = 1f;
     [SerializeField] private float slideStrafeMaxSpeed = 3f;
     [SerializeField] private float slideStrafeStrength = 0.3f;
+    [SerializeField] private float slideFriction = 35f;
 #pragma warning restore IDE0044
     #endregion
 
@@ -232,17 +235,31 @@ public class ParkourPlayerController2 : MonoBehaviour
                 // Check if still on wall
                 wallRunner.CheckForWall(wallDirection);
 
-                // Move
-                var motionAxis = inputGroup.GetAxisMotion();
-                motionControllers.ActiveMotionController.MoveHorizontal(motionAxis);
-
-                // Try Jump
-                if (jump)
                 {
-                    var jumpDirection = new Vector2(-wallDirection, 0);
-                    motionControllers.ActiveMotionController.Jump(jumpDirection);
-                    SetStateToNormal();
-                    wallRunner.DetatchFromWall();
+                    var cf = refs.CoalescingForce;
+                    var motion = new Vector3(0, 0, inputMotion.y);
+
+                    // Move
+                    //motionControllers.ActiveMotionController.MoveHorizontal(motionAxis);
+
+                    // Create force
+                    var motionForce = ToForce.OverFixedTime(motion * wallrunStartSpeed);
+
+                    // Limit force??
+                    motionForce = Vector3.ClampMagnitude(motionForce, wallrunStartSpeed * ToForce.forceMultiplicationFactor);
+                    
+                    // Apply
+                    motionForce = transform.TransformDirection(motionForce);
+                    cf.AddForce(motionForce);
+
+                    // Try Jump
+                    if (jump)
+                    {
+                        var jumpDirection = new Vector2(-wallDirection, 0);
+                        motionControllers.ActiveMotionController.Jump(jumpDirection);
+                        SetStateToNormal();
+                        wallRunner.DetatchFromWall();
+                    }
                 }
 
                 // Detatch from wall if too slow or crouching
@@ -348,7 +365,18 @@ public class ParkourPlayerController2 : MonoBehaviour
         // track speed
         averageFwdSpeedTracker.Track(refs.CoalescingForce.ForwardVel);
     }
-
+    private void FixedUpdate()
+    {
+        // If grounded, use ground friction
+        if (Grounded && state == CharacterState.Normal)
+        {
+            refs.Drag.DragConstant = groundFriction;
+        }
+        else
+        {
+            refs.Drag.DragConstant = airFriction;
+        }
+    }
     #endregion
 
     #region Public Methods
@@ -390,6 +418,7 @@ public class ParkourPlayerController2 : MonoBehaviour
     {
         SetState(CharacterState.Normal);
         motionControllers.SetActiveMotionController(CharacterState.Normal);
+        refs.Drag.DragConstant = groundFriction;
 
         CamControlsRotation(true);
         refs.Cam.DipCamera(false);
@@ -398,6 +427,7 @@ public class ParkourPlayerController2 : MonoBehaviour
     {
         SetState(CharacterState.Wallrun);
         motionControllers.SetActiveMotionController(CharacterState.Wallrun);
+        refs.Drag.DragConstant = wallrunFriction;
 
         // Find new pos & rotation to interpolate to
         SmoothStickToWall();
@@ -415,11 +445,13 @@ public class ParkourPlayerController2 : MonoBehaviour
 
         CamControlsRotation(false);
         refs.Cam.DipCamera(true);
+        refs.Drag.DragConstant = slideFriction;
     }
     private void SetStateToWallClimb()
     {
         SetState(CharacterState.Climbing);
         motionControllers.SetActiveMotionController(CharacterState.Climbing);
+        refs.Drag.DragConstant = groundFriction;
 
         // Cancel vertical momentum
         refs.CoalescingForce.ResetVelocityY();
