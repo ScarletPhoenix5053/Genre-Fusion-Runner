@@ -128,7 +128,7 @@ public class HaikuCollectionSystem : MonoBehaviour
         Debug.Log("Yay you finished the haiku: " + haiku + "! " +  "by collecting " + KanaCollected + " kana!");
     }
 
-    private const string testCsvFolder = "C:/Users/carlo/Documents/Programming/Kinetic Translation/Kinetic-Translation/Assets/Haiku Data/Resources/";
+    private const string testCsvFolder = "C:/Projects/Fucking Parkour and Shit/Kinetic Translation/Assets/Haiku Data/Resources/";
     private const string testCsvPath = "Haiku_SummerGrasses.csv";
     private static Haiku TestHaiku()
     {
