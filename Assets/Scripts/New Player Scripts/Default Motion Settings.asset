@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e754b709a9b1279448cd344faae95a68, type: 3}
+  m_Name: Default Motion Settings
+  m_EditorClassIdentifier: 
+  SpeedWalk: 8
+  SpeedRunMultiplier: 2
+  SpeedWallRun: 12
+  SpeedBoostOnSlide: 2
+  SpeedBoostOnWallRun: 2
+  SpeedBoostOnWallJump: 2
+  GravityStrength: 10
+  GravityMax: 1000
+  GoundCheck:
+    actorHeight: 2
+    surfaceMask:
+      serializedVersion: 2
+      m_Bits: 311
+    smooth: 1
+    smoothSpeed: 20
+    CastOrigin: {x: 0, y: 1.2, z: 0}
+    CheckPoint: {x: 0, y: -0.9, z: 0}
+    surfaceSphereCastRadius: 0.1
+    surfaceSphereCastDist: 20
+    CheckRadius: 0.2
+  FrictionGround: 6
+  FrictionSlide: 1
+  FrictionWall: 2.5
+  AirStrafe: 5
+  AirResistance: 0.2
+  AddJumps: 0
+  JumpHeight: 18

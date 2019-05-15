@@ -6,7 +6,61 @@ using SCARLET.DbOverlay;
 [RequireComponent(typeof(PlayerRefs2))]
 public class ParkourPlayerController2 : MonoBehaviour
 {
-    #region Flow
+    #region Variables
+
+    #region Input and Prefs
+    private IPlayerInput inputGroup;
+    private PlayerRefs2 refs;
+    #endregion
+
+    #region Motion
+    private PlayerMotionControl2 motionControllers;
+    private Averager averageFwdSpeedTracker = new Averager(288);
+    public float Speed => averageFwdSpeedTracker.GetAverage();
+    protected bool Grounded => refs.GroundChecker.Grounded;
+    #endregion
+
+    #region Wallrun
+#pragma warning disable IDE0044
+    [Header("Wallrun Settings")]
+    [SerializeField] private float wallrunCamTilt = 5f;
+    [SerializeField] private float wallrunMinStartSpeed = 5f;
+    [SerializeField] private float wallrunMinStaySpeed = 0f;
+    [SerializeField] private float wallrunLeapBoost = 10f;
+    [SerializeField] private float wallrunAdjustTime = 0.5f;
+#pragma warning restore IDE0044
+
+    private int wallDirection = 0;
+    private WallRunDetector wallRunner;
+    private IEnumerator smoothTranslateRoutine;
+    #endregion
+
+    #region WallClimb
+#pragma warning disable IDE0044
+    [Header("Climb")]
+    [SerializeField] private LayerMask climbMask;
+    [SerializeField] private float maxClimbTime = 2f;
+#pragma warning restore IDE0044
+    private float climbTime = 0f;
+    private bool wallInFront;
+    private Collider lastWall;
+    #endregion
+
+    #region Slide
+#pragma warning disable IDE0044
+    [Header("Slide Settings")]
+    [SerializeField] private float minSlideSpeed = 1f;
+#pragma warning restore IDE0044
+    #endregion
+
+    #region State
+    private CharacterState state = CharacterState.Normal;
+    #endregion
+
+    #endregion
+
+    #region Runtime Messages
+
     private void Awake()
     {
         GetRefComponent();
@@ -16,17 +70,151 @@ public class ParkourPlayerController2 : MonoBehaviour
     }
     private void Update()
     {
-        // Create generic motion interface for each state
-        // motion controllers handle juggling of control between themselves?
-        // PlayerControl > Motion Control Handler > Indv motion controllers > Translator ????
+        // Get input
+        var motion = inputGroup.GetAxisMotion();
+        var sprint = inputGroup.GetInputSprint();
+        var jump = inputGroup.GetInputJump();
+        var crouch = inputGroup.GetInputCrouch();
 
         switch (state)
         {
-            case CharacterState.Normal: LoopNormalState(); break;
-            case CharacterState.Wallrun: LoopWallrunState(); break;
-            case CharacterState.Slide: LoopSlideState(); break;
-            case CharacterState.Climbing: LoopWallClimbState(); break;
+            case CharacterState.Normal:
+                #region Normal Motion
+                if (Grounded) wallRunner.RestorePrevWall();
 
+                // Camera
+                UpdateCam();
+
+                // Move
+                motionControllers.ActiveMotionController.Sprint(sprint);
+                motionControllers.ActiveMotionController.MoveHorizontal(motion);
+
+                // Try Jump
+                if (jump && Grounded) motionControllers.ActiveMotionController.Jump(motion);
+
+                // Try wallrun
+                if (!Grounded && Speed > wallrunMinStartSpeed)
+                {
+                    wallRunner.CheckForWall();
+                }
+
+                // Try slide
+                if (Grounded && Speed > minSlideSpeed && crouch)
+                {
+                    SetStateToSlide();
+                }
+
+                // Try climb wall
+                {
+                    var wallCheckDist = .6f;
+                    var wallRay = new Ray(transform.position, transform.forward);
+                    wallInFront = Physics.Raycast(wallRay, out RaycastHit hit, wallCheckDist, climbMask, QueryTriggerInteraction.Ignore);
+                    Debug.DrawRay(transform.position, transform.forward * wallCheckDist);
+
+                    if (Grounded) lastWall = null;
+                    if (
+                        wallInFront && inputGroup.GetAxisMotion().y > 0
+                        && state != CharacterState.Climbing
+                        && hit.collider != lastWall
+                        )
+                    {
+                        lastWall = hit.collider;
+                        SetStateToWallClimb();
+                    }
+                }
+
+                #endregion
+                break;
+
+            case CharacterState.Wallrun:
+                #region Wallrun
+
+                // Camera
+                UpdateCam();
+
+                // Check if still on wall
+                wallRunner.CheckForWall(wallDirection);
+
+                // Move
+                var motionAxis = inputGroup.GetAxisMotion();
+                motionControllers.ActiveMotionController.MoveHorizontal(motionAxis);
+
+                // Try Jump
+                if (jump)
+                {
+                    var jumpDirection = new Vector2(-wallDirection, 0);
+                    motionControllers.ActiveMotionController.Jump(jumpDirection);
+                    SetStateToNormal();
+                    wallRunner.DetatchFromWall();
+                }
+
+                // Detatch from wall if too slow or crouching
+                if (Speed <= wallrunMinStaySpeed || crouch)
+                {
+                    wallRunner.DetatchFromWall();
+                }
+
+                #endregion
+                break;
+
+            case CharacterState.Slide:
+                #region Slide State
+                // Camera
+                UpdateCam(0.1f);
+
+                // Strafe
+                motionControllers.ActiveMotionController.MoveHorizontal(motion);
+
+                // Jump
+                if (jump)
+                {
+                    motionControllers.ActiveMotionController.Jump(motion);
+                    SetStateToNormal();
+                }
+
+                // End slide if too slow or airborne
+                if (
+                    ((motionControllers.ActiveMotionController.Speed < minSlideSpeed) && !inputGroup.GetInputCrouch())
+                    || !Grounded
+                    )
+                {
+                    SetStateToNormal();
+                }
+
+                #endregion
+                break;
+
+            case CharacterState.Climbing:
+                #region Climb State
+                // Camera
+                UpdateCam();
+
+                // Climb
+                motionControllers.ActiveMotionController.MoveHorizontal(motion);
+
+                // Jump off
+                if (jump)
+                {
+                    motionControllers.ActiveMotionController.Jump();
+                    SetStateToNormal();
+                }
+
+                // Manual fall-off
+                if (crouch) SetStateToNormal();
+
+                // End climb if 
+                // no more wall to climb
+                // or climb timer runs out
+                climbTime += Time.deltaTime;
+                if (!wallInFront || (climbTime > maxClimbTime))
+                {
+                    SetStateToNormal();
+                }
+
+                #endregion
+                break;
+
+            // Throw error for unrecognized state
             default: throw new System.NotImplementedException("Please impliment interactions for state: " + state.ToString());
         }
 
@@ -35,28 +223,37 @@ public class ParkourPlayerController2 : MonoBehaviour
         // track speed
         averageFwdSpeedTracker.Track(refs.CoalescingForce.ForwardVel);
     }
+
     #endregion
 
-    /*  PROBLEM AREAS:
-     *  
-     *  Momentum - momentum needs to carry accross between motion controllers and translator
-     *      Force-based translator?
-     *      
-     *      PLAYER CONTROLLER
-     *          \ 
-     *          MOTION CONTROLLERS
-     *              \
-     *              FORCE-BASED TRANSLATOR
-     *                  \
-     *                  TRANSFORM.POSITION
-     *      
-     *  Individual state control - simplifty interface with motion controllers
-     *  Motion controller and player sates operate wtih similar enums
-     *  
-     *  Extensive wallrun code - separate into wallrun classes or make new ones
-     */
+    #region Public Methods
 
-    #region Cam
+
+
+    #endregion
+    #region Private Methods
+
+    #region Init
+    private void GetRefComponent()
+    {
+        refs = GetComponent<PlayerRefs2>();
+    }
+    private void CreateObjectsAndInjectDependencies()
+    {
+        inputGroup = new KBMInputGroup(refs.PlayerPrefrences);
+        motionControllers = new PlayerMotionControl2(
+            inputGroup,
+            new BaseMotionController2[4]
+            {
+                refs.GroundedMotionController,
+                refs.WallrunMotionController,
+                refs.SlideMotionController,
+                refs.WallClimbMotionController
+            });
+    }
+    #endregion
+
+    #region Camera
     private void UpdateCam(float lag = 0f)
     {
         var look = inputGroup.GetAxisLook();
@@ -65,7 +262,8 @@ public class ParkourPlayerController2 : MonoBehaviour
     private void TiltCam(float angle) => refs.Cam.SetTilt(angle);
     private void CamControlsRotation(bool value) => refs.Cam.ControlTargetRotation = value;
     #endregion
-    #region State Control
+
+    #region State
     private void SetState(CharacterState newState)
     {
         if (newState == state) return;
@@ -73,10 +271,7 @@ public class ParkourPlayerController2 : MonoBehaviour
         if (newState != CharacterState.Climbing) climbTime = 0;
         state = newState;
     }
-    private CharacterState state = CharacterState.Normal;
-    private PlayerMotionControl2 motionControllers;
-    #endregion
-    #region Normal Motion
+
     private void SetStateToNormal()
     {
         SetState(CharacterState.Normal);
@@ -84,118 +279,6 @@ public class ParkourPlayerController2 : MonoBehaviour
 
         CamControlsRotation(true);
         refs.Cam.DipCamera(false);
-    }
-    private void MoveAsNormal()
-    {
-        var motion = inputGroup.GetAxisMotion();
-        var sprint = inputGroup.GetInputSprint();
-        var jump = inputGroup.GetInputJump();
-        var crouch = inputGroup.GetInputCrouch();
-        TryNormalMotion(motion, sprint, jump);
-        TryWallRun();
-        TrySlide(crouch);
-        TryWallClimb();
-    }
-    private void LoopNormalState()
-    {
-        UpdateCam();
-        AllowRunningOnPrevWall();
-        MoveAsNormal();
-    }
-    private void TryNormalMotion(Vector2 motion, bool sprint, bool jump)
-    {
-        motionControllers.ActiveMotionController.Sprint(sprint);
-        if (jump && Grounded) motionControllers.ActiveMotionController.Jump(motion);
-        motionControllers.ActiveMotionController.MoveHorizontal(motion);
-    }
-
-    private Averager averageFwdSpeedTracker = new Averager(288);
-    public float Speed => averageFwdSpeedTracker.GetAverage();
-    protected bool Grounded => refs.GroundChecker.Grounded;
-    #endregion
-    #region Wallrunning
-    private void AllowRunningOnPrevWall()
-    {
-        if (Grounded) wallRunner.RestorePrevWall();
-    }
-    #region Inspector
-    [Header("Wallrun Settings")]
-#pragma warning disable
-    [SerializeField] private float wallrunCamTilt = 5f;
-    [SerializeField] private float wallrunMinStartSpeed = 5f;
-    [SerializeField] private float wallrunMinStaySpeed = 0f;
-    [SerializeField] private float wallrunLeapBoost = 10f;
-    [SerializeField] private float wallrunAdjustTime = 0.5f;
-#pragma warning restore
-    #endregion
-    private int wallDirection = 0;
-    private WallRunDetector wallRunner;
-
-    private void SubscribeToWallrunDetector()
-    {
-        wallRunner = GetComponent<WallRunDetector>();
-        if (wallRunner == null) Debug.LogWarning("Cannot find a wallrun detector, movement may not work as intended", this);
-        else
-        {
-            wallRunner.OnNewWallDetected += StartWallrun;
-            wallRunner.OnDetatchFromWall += EndWallRun;
-        }
-    }
-
-    private void LoopWallrunState()
-    {
-        CheckIfStillOnWall();
-        UpdateCam();
-        MoveAsWallrunning();
-    }
-    private void CheckIfStillOnWall()
-    {
-        wallRunner.CheckForWall(wallDirection);
-    }
-
-    private void MoveAsWallrunning()
-    {
-        var motion = inputGroup.GetAxisMotion();
-        motionControllers.ActiveMotionController.MoveHorizontal(motion);
-
-        var speed = motionControllers.ActiveMotionController.Speed;
-        TryWallJump();
-        DetatchIfTooSlowOrCrouching();
-    }
-    private void DetatchIfTooSlowOrCrouching()
-    {
-        // Detatch if too slow or crouching
-        
-        var crouch = inputGroup.GetInputCrouch();
-        if (Speed <= wallrunMinStaySpeed || crouch)
-        {
-            //if (crouch) Debug.Log("Crouch input: ending wallrun");
-            //else Debug.Log("Too slow to maintain wallrun");
-            wallRunner.DetatchFromWall();
-        }
-    }
-    private void TryWallJump()
-    {
-        // Leap off of wall if jump input
-        var jump = inputGroup.GetInputJump();
-        if (jump)
-        {
-            var jumpDirection = new Vector2(-wallDirection, 0);
-            motionControllers.ActiveMotionController.Jump(jumpDirection);
-            SetStateToNormal();
-            wallRunner.DetatchFromWall();
-        }
-    }
-
-    private void TryWallRun()
-    {
-
-        // If able to wallrun
-        if (!Grounded && Speed > wallrunMinStartSpeed)
-        {
-            // Check for wall to run on
-            wallRunner.CheckForWall();
-        }
     }
     private void SetStateToWallRun()
     {
@@ -211,6 +294,45 @@ public class ParkourPlayerController2 : MonoBehaviour
         CamControlsRotation(false);
         refs.Cam.DipCamera(false);
     }
+    private void SetStateToSlide()
+    {
+        SetState(CharacterState.Slide);
+        motionControllers.SetActiveMotionController(CharacterState.Slide);
+
+        CamControlsRotation(false);
+        refs.Cam.DipCamera(true);
+    }
+    private void SetStateToWallClimb()
+    {
+        SetState(CharacterState.Climbing);
+        motionControllers.SetActiveMotionController(CharacterState.Climbing);
+
+        // Cancel vertical momentum
+        refs.CoalescingForce.ResetVelocityY();
+
+        CamControlsRotation(false);
+        refs.Cam.DipCamera(false);
+    }
+    #endregion
+
+    #region Wallrun
+    private void SubscribeToWallrunDetector()
+    {
+        wallRunner = GetComponent<WallRunDetector>();
+        if (wallRunner == null) Debug.LogWarning("Cannot find a wallrun detector, movement may not work as intended", this);
+        else
+        {
+            wallRunner.OnNewWallDetected += StartWallrun;
+            wallRunner.OnDetatchFromWall += EndWallRun;
+        }
+    }
+    private void LeapFromWallrun(float fwdSpeed)
+    {
+        // var lateralBoost = new Vector2(wallrunLeapBoost * -wallDirection, fwdSpeed);
+        var lateralBoost = new Vector2(0, wallrunLeapBoost);
+        motionControllers.ActiveMotionController.Jump(lateralBoost);
+    }
+
     private void StartWallrun(BoxCollider newWallTransform, int side)
     {
         wallDirection = side;
@@ -227,13 +349,6 @@ public class ParkourPlayerController2 : MonoBehaviour
         TiltCam(0);
     }
 
-    private void LeapFromWallrun(float fwdSpeed)
-    {
-        // var lateralBoost = new Vector2(wallrunLeapBoost * -wallDirection, fwdSpeed);
-        var lateralBoost = new Vector2(0, wallrunLeapBoost);
-        motionControllers.ActiveMotionController.Jump(lateralBoost);
-    }
-
     private void SmoothStickToWall()
     {
         var newRotation = wallRunner.GetWallRunEulers();
@@ -244,7 +359,6 @@ public class ParkourPlayerController2 : MonoBehaviour
         smoothTranslateRoutine = SmoothTranslateXRoutine(to: newPosition);
         StartCoroutine(smoothTranslateRoutine);
     }
-    private IEnumerator smoothTranslateRoutine;
     private IEnumerator SmoothTranslateXRoutine(Vector3 to)
     {
         var smoothCurrent = 0f;
@@ -309,132 +423,9 @@ public class ParkourPlayerController2 : MonoBehaviour
         }*/
     }
     #endregion
-    #region Sliding 
-#pragma warning disable
-    [SerializeField] private float minSlideSpeed = 1f;
-#pragma warning restore
-    private void SetStateToSlide()
-    {
-        SetState(CharacterState.Slide);
-        motionControllers.SetActiveMotionController(CharacterState.Slide);
 
-        CamControlsRotation(false);
-        refs.Cam.DipCamera(true);
-    }
-
-    private void TrySlide(bool crouch)
-    {
-        // If running and holding crouch
-        if (Grounded && Speed > minSlideSpeed && crouch)
-        {
-            // Slide!
-            SetStateToSlide();
-        }
-    }
-    private void LoopSlideState()
-    {
-        UpdateCam(0.1f);
-        MoveAsSliding();
-    }
-    private void MoveAsSliding()
-    {
-        var motion = inputGroup.GetAxisMotion();
-        var jump = inputGroup.GetInputJump();
-        TryStrafe(motion);
-        TryJumpFromSlide(jump, motion);
-        EndSlideIfTooSlowOrAirborne();
-    }
-    private void EndSlideIfTooSlowOrAirborne()
-    {
-        if (((motionControllers.ActiveMotionController.Speed < minSlideSpeed) && !inputGroup.GetInputCrouch()) || !Grounded)
-        {
-            SetStateToNormal();
-        }
-    }
-    private void TryJumpFromSlide(bool jump, Vector2 motion)
-    {
-        if (jump)
-        {
-            motionControllers.ActiveMotionController.Jump(motion);
-            SetStateToNormal();
-        }
-    }
-    private void TryStrafe(Vector2 motion)
-    {
-        motionControllers.ActiveMotionController.MoveHorizontal(motion);
-    }
     #endregion
-    #region WallClimb
-    [Header("Climb")]
-    [SerializeField] private LayerMask climbMask;
-    [SerializeField] private float maxClimbTime = 2f;
-    private float climbTime = 0f;
-    private bool wallInFront;
-    private Collider lastWall;
-    private void TryWallClimb()
-    {
-        var wallCheckDist = .6f;
-        var wallRay = new Ray(transform.position, transform.forward);
-        RaycastHit hit;
-        wallInFront = Physics.Raycast(wallRay, out hit, wallCheckDist, climbMask, QueryTriggerInteraction.Ignore);
-        Debug.DrawRay(transform.position, transform.forward * wallCheckDist);
-        
-        if (Grounded) lastWall = null;
-        if (wallInFront && inputGroup.GetAxisMotion().y > 0 && state != CharacterState.Climbing && hit.collider != lastWall)
-        {
-            lastWall = hit.collider;
-            SetStateToWallClimb();
-        }
-    }
-    private void SetStateToWallClimb()
-    {
-        SetState(CharacterState.Climbing);
-        motionControllers.SetActiveMotionController(CharacterState.Climbing);
 
-        // Find new pos & rotation to interpolate to
-        //SmoothStickToWall();
-
-        // Cancel vertical momentum
-        refs.CoalescingForce.ResetVelocityY();
-
-        CamControlsRotation(false);
-        refs.Cam.DipCamera(false);
-    }
-
-    private void LoopWallClimbState()
-    {
-        UpdateCam();
-        MoveAsWallClimb();
-        TryWallClimb();
-
-        climbTime += Time.deltaTime;
-        if (climbTime > maxClimbTime)
-        {
-            SetStateToNormal();
-        }
-    }
-
-    private void MoveAsWallClimb()
-    {
-        var motion = inputGroup.GetAxisMotion();
-        var sprint = inputGroup.GetInputSprint();
-        var jump = inputGroup.GetInputJump();
-        var crouch = inputGroup.GetInputCrouch();
-
-        motionControllers.ActiveMotionController.MoveHorizontal(motion);
-        if (jump)
-        {
-            motionControllers.ActiveMotionController.Jump();
-            SetStateToNormal();
-        }
-        if (crouch) SetStateToNormal();
-
-        if (!wallInFront) SetStateToNormal();
-    }
-    #endregion
-    #region Input and Prefs
-    private IPlayerInput inputGroup;
-    #endregion
     #region Debugging
     private const string idCharState = "Character State";
     private const string idMoveState = "Character Motion Controller";
@@ -456,24 +447,4 @@ public class ParkourPlayerController2 : MonoBehaviour
         DebugOverlay.UpdateLog(idCharFwdSpeed, refs.CoalescingForce.ForwardVel.ToString());
     }
     #endregion
-    #region Init
-    private PlayerRefs2 refs;
-    private void GetRefComponent()
-    {
-        refs = GetComponent<PlayerRefs2>();
-    }
-    private void CreateObjectsAndInjectDependencies()
-    {
-        inputGroup = new KBMInputGroup(refs.PlayerPrefrences);
-        motionControllers = new PlayerMotionControl2(
-            inputGroup,
-            new BaseMotionController2[4]
-            {
-                refs.GroundedMotionController,
-                refs.WallrunMotionController,
-                refs.SlideMotionController,
-                refs.WallClimbMotionController
-            });
-    }
-    #endregion    
 }
