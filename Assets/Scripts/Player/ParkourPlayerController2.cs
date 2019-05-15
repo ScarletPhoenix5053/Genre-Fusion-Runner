@@ -22,8 +22,72 @@ public class ParkourPlayerController2 : MonoBehaviour
 
         switch (state)
         {
-            case CharacterState.Normal: LoopNormalState(); break;
-            case CharacterState.Wallrun: LoopWallrunState(); break;
+            case CharacterState.Normal:
+                if (Grounded) wallRunner.RestorePrevWall();
+
+                // Camera
+                UpdateCam();
+
+                // Get input
+                var motion = inputGroup.GetAxisMotion();
+                var sprint = inputGroup.GetInputSprint();
+                var jump = inputGroup.GetInputJump();
+                var crouch = inputGroup.GetInputCrouch();
+
+                // Move
+                motionControllers.ActiveMotionController.Sprint(sprint);
+                motionControllers.ActiveMotionController.MoveHorizontal(motion);
+
+                // Try Jump
+                if (jump && Grounded) motionControllers.ActiveMotionController.Jump(motion);
+
+                // Try wallrun
+                if (!Grounded && Speed > wallrunMinStartSpeed)
+                {
+                    wallRunner.CheckForWall();
+                }
+
+                // Try slide
+                if (Grounded && Speed > minSlideSpeed && crouch)
+                {
+                    SetStateToSlide();
+                }
+
+                // Try climb wall
+                {
+                    var wallCheckDist = .6f;
+                    var wallRay = new Ray(transform.position, transform.forward);
+                    RaycastHit hit;
+                    wallInFront = Physics.Raycast(wallRay, out hit, wallCheckDist, climbMask, QueryTriggerInteraction.Ignore);
+                    Debug.DrawRay(transform.position, transform.forward * wallCheckDist);
+
+                    if (Grounded) lastWall = null;
+                    if (
+                        wallInFront && inputGroup.GetAxisMotion().y > 0
+                        && state != CharacterState.Climbing
+                        && hit.collider != lastWall)
+                    {
+                        lastWall = hit.collider;
+                        SetStateToWallClimb();
+                    }
+                }
+                break;
+
+            case CharacterState.Wallrun:
+
+                // Camera
+                UpdateCam();
+
+                // Check if still on wall
+                wallRunner.CheckForWall(wallDirection);
+                
+                // Move
+                var motionAxis = inputGroup.GetAxisMotion();
+                motionControllers.ActiveMotionController.MoveHorizontal(motionAxis);
+
+                TryWallJump();
+                DetatchIfTooSlowOrCrouching();
+                break;
             case CharacterState.Slide: LoopSlideState(); break;
             case CharacterState.Climbing: LoopWallClimbState(); break;
 
@@ -85,39 +149,12 @@ public class ParkourPlayerController2 : MonoBehaviour
         CamControlsRotation(true);
         refs.Cam.DipCamera(false);
     }
-    private void MoveAsNormal()
-    {
-        var motion = inputGroup.GetAxisMotion();
-        var sprint = inputGroup.GetInputSprint();
-        var jump = inputGroup.GetInputJump();
-        var crouch = inputGroup.GetInputCrouch();
-        TryNormalMotion(motion, sprint, jump);
-        TryWallRun();
-        TrySlide(crouch);
-        TryWallClimb();
-    }
-    private void LoopNormalState()
-    {
-        UpdateCam();
-        AllowRunningOnPrevWall();
-        MoveAsNormal();
-    }
-    private void TryNormalMotion(Vector2 motion, bool sprint, bool jump)
-    {
-        motionControllers.ActiveMotionController.Sprint(sprint);
-        if (jump && Grounded) motionControllers.ActiveMotionController.Jump(motion);
-        motionControllers.ActiveMotionController.MoveHorizontal(motion);
-    }
 
     private Averager averageFwdSpeedTracker = new Averager(288);
     public float Speed => averageFwdSpeedTracker.GetAverage();
     protected bool Grounded => refs.GroundChecker.Grounded;
     #endregion
     #region Wallrunning
-    private void AllowRunningOnPrevWall()
-    {
-        if (Grounded) wallRunner.RestorePrevWall();
-    }
     #region Inspector
     [Header("Wallrun Settings")]
 #pragma warning disable
@@ -142,25 +179,8 @@ public class ParkourPlayerController2 : MonoBehaviour
         }
     }
 
-    private void LoopWallrunState()
-    {
-        CheckIfStillOnWall();
-        UpdateCam();
-        MoveAsWallrunning();
-    }
-    private void CheckIfStillOnWall()
-    {
-        wallRunner.CheckForWall(wallDirection);
-    }
-
     private void MoveAsWallrunning()
     {
-        var motion = inputGroup.GetAxisMotion();
-        motionControllers.ActiveMotionController.MoveHorizontal(motion);
-
-        var speed = motionControllers.ActiveMotionController.Speed;
-        TryWallJump();
-        DetatchIfTooSlowOrCrouching();
     }
     private void DetatchIfTooSlowOrCrouching()
     {
@@ -184,17 +204,6 @@ public class ParkourPlayerController2 : MonoBehaviour
             motionControllers.ActiveMotionController.Jump(jumpDirection);
             SetStateToNormal();
             wallRunner.DetatchFromWall();
-        }
-    }
-
-    private void TryWallRun()
-    {
-
-        // If able to wallrun
-        if (!Grounded && Speed > wallrunMinStartSpeed)
-        {
-            // Check for wall to run on
-            wallRunner.CheckForWall();
         }
     }
     private void SetStateToWallRun()
@@ -321,16 +330,6 @@ public class ParkourPlayerController2 : MonoBehaviour
         CamControlsRotation(false);
         refs.Cam.DipCamera(true);
     }
-
-    private void TrySlide(bool crouch)
-    {
-        // If running and holding crouch
-        if (Grounded && Speed > minSlideSpeed && crouch)
-        {
-            // Slide!
-            SetStateToSlide();
-        }
-    }
     private void LoopSlideState()
     {
         UpdateCam(0.1f);
@@ -371,21 +370,6 @@ public class ParkourPlayerController2 : MonoBehaviour
     private float climbTime = 0f;
     private bool wallInFront;
     private Collider lastWall;
-    private void TryWallClimb()
-    {
-        var wallCheckDist = .6f;
-        var wallRay = new Ray(transform.position, transform.forward);
-        RaycastHit hit;
-        wallInFront = Physics.Raycast(wallRay, out hit, wallCheckDist, climbMask, QueryTriggerInteraction.Ignore);
-        Debug.DrawRay(transform.position, transform.forward * wallCheckDist);
-        
-        if (Grounded) lastWall = null;
-        if (wallInFront && inputGroup.GetAxisMotion().y > 0 && state != CharacterState.Climbing && hit.collider != lastWall)
-        {
-            lastWall = hit.collider;
-            SetStateToWallClimb();
-        }
-    }
     private void SetStateToWallClimb()
     {
         SetState(CharacterState.Climbing);
@@ -405,7 +389,6 @@ public class ParkourPlayerController2 : MonoBehaviour
     {
         UpdateCam();
         MoveAsWallClimb();
-        TryWallClimb();
 
         climbTime += Time.deltaTime;
         if (climbTime > maxClimbTime)
