@@ -77,6 +77,9 @@ public class ParkourPlayerController2 : MonoBehaviour
             wallRunner.OnDetatchFromWall += EndWallRun;
         }
 
+        // Subscribe to haiku change
+        //HaikuCollectionSystem.OnCompletion += UpdateMotionProfile;
+
         // Initialize debugging stuff
         CreateDebugOverlayLogs();
     }
@@ -353,6 +356,10 @@ public class ParkourPlayerController2 : MonoBehaviour
     public void SetMotionProfile(MotionOptionGroup newMotionProfile)
     {
         motion = newMotionProfile;
+    }
+    public void UpdateMotionProfile(Haiku haiku)
+    {
+        SetMotionProfile(haiku.MotionOptionGroup);
     }
 
     #endregion

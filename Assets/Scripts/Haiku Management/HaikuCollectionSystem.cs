@@ -87,17 +87,32 @@ public class HaikuCollectionSystem : MonoBehaviour
     #region Display
 
     private const float displayResetDelay = 1f;
+    private void GeneratePickupsAfterDelay() => Invoke("GeneratePickups", displayResetDelay + 1f);
+    private void GeneratePickups() => GenerateKanaPickupsFor(haiku);
+    private void InitDisplayAfterDelay() => Invoke("InitDisplay", displayResetDelay + 0.5f);
+    private void InitDisplay() =>  haikuDisplay.InitDisplay(haiku);
     private void ResetDisplayAfterDelay(Haiku haiku) => Invoke("ResetDisplay", displayResetDelay);
+    private void ResetDisplayAfterDelay() => Invoke("ResetDisplay", displayResetDelay);
     private void ResetDisplay() => haikuDisplay.ResetDisplay();
     private void GetNewHaiku(Haiku oldHaiku)
     {
         do
         {
             haiku = haikuDatabase.GetRandomHaiku();
+            Debug.Log("trying to get new haiku");
         }
-        while (haiku != oldHaiku);
+        while (haiku.Name == oldHaiku.Name);
 
+        Debug.Log("new haiku is: " + haiku);
+        
         DebugOverlay.UpdateLog(idActiveHaiku, haiku.Name);
+
+        ResetDisplayAfterDelay();
+        InitDisplayAfterDelay();
+        GeneratePickupsAfterDelay();
+
+        var player = FindObjectOfType<ParkourPlayerController2>();
+        player.UpdateMotionProfile(haiku);
     }
 
     private void UpdateHaikuDisplay(Kana newKana)

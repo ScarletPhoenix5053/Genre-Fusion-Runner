@@ -12,6 +12,7 @@ public class MajorDisplay : MonoBehaviour
     private void Awake()
     {
         anim = GetComponent<Animator>();
+        HaikuCollectionSystem.OnCompletion += AnnounceHaikuCompletion;
     }
 
     public void Show(Kana kana)
@@ -23,8 +24,8 @@ public class MajorDisplay : MonoBehaviour
     {
         throw new System.NotImplementedException();
     }
-    public void Announce(string message)
+    public void AnnounceHaikuCompletion(Haiku oldHaiku)
     {
-        throw new System.NotImplementedException();
+        anim.SetTrigger("Large");
     }
 }

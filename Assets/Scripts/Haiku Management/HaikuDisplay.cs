@@ -9,12 +9,20 @@ public class HaikuDisplay : MonoBehaviour
     [SerializeField] private KanaSquare kanaSquareObj;
     
     private KanaSquare[][] kanaSquares;
-    private Dictionary<Kana, Vector2Int> kanaPosition = new Dictionary<Kana, Vector2Int>();
+    private Dictionary<Vector2Int, Kana> kanaPosition = new Dictionary<Vector2Int, Kana>();
 
     public void ActivateKanaSquare(Kana kana)
     {
-        var squarePos = kanaPosition[kana];
-        kanaSquares[squarePos.x][squarePos.y].SetKana(to: kana);
+        foreach (KeyValuePair<Vector2Int, Kana> kanaPos in kanaPosition)
+        {
+            if (kana == kanaPos.Value)
+            {
+                var squarePos = kanaPos.Key;
+                kanaSquares[squarePos.x][squarePos.y].SetKana(to: kana);
+                kanaPosition.Remove(kanaPos.Key);
+                break;
+            }
+        }
     }
 
 
@@ -32,10 +40,28 @@ public class HaikuDisplay : MonoBehaviour
     }
     public void InitDisplay(Haiku haiku)
     {
-        int currentKana = 0;
+        // Clear out lines if they contain anything
+        if (kanaSquares != null)
+        {
+            for (int a = 0; a < kanaSquares.Length; a++)
+            {
+                for (int b = 0; b < kanaSquares[a].Length; b++)
+                {
+                    var go = kanaSquares[a][b].gameObject;
+                    go.transform.SetParent(inactiveKanaSquares);
+                    go.name = "Kana Square (inactive)";
+                    go.SetActive(false);
+                }
+            }
+        }
         kanaSquares = new KanaSquare[lineCount][];
+
+        // Reset dictionary
+        kanaPosition = new Dictionary<Vector2Int, Kana>();
+
+        int currentKana = 0;
         var allKana = haiku.ToKana();
-        for (int l = 0; l < lineCount; l++)
+        for (int l = 0; l < lineCount; l++) 
         {
             kanaSquares[l] = new KanaSquare[haiku.Lines[l].Length];
             for (int k = 0; k < haiku.Lines[l].Length; k++)
@@ -48,7 +74,7 @@ public class HaikuDisplay : MonoBehaviour
 
                 // Store kana square info
                 kanaSquares[l][k] = newKanaGo.GetComponent<KanaSquare>();
-                kanaPosition.Add(allKana[currentKana], new Vector2Int(l, k));
+                kanaPosition.Add(new Vector2Int(l, k), allKana[currentKana]);
 
                 currentKana++;
             }

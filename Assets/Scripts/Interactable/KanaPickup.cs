@@ -20,8 +20,8 @@ public class KanaPickup : MonoBehaviour
     public void SetKana(Kana to)
     {
         kana = to;
-        SetActive(true);
         display.text = kana.Character.ToString();
+        SetActive(true);
     }
 
     private void Awake()
@@ -35,7 +35,7 @@ public class KanaPickup : MonoBehaviour
             return;
         }
     }
-    private void Update()
+    private void LateUpdate()
     {
         if (!Active) return;
         

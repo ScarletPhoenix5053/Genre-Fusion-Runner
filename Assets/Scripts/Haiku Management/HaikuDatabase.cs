@@ -141,8 +141,9 @@ public class HaikuDatabase : ScriptableObject
         }
 
         // For each entry:
-        foreach (string[] entry in csvEntries)
+        for (int entryIndex = 0; entryIndex < csvEntries.Count; entryIndex++)
         {
+            var entry = csvEntries[entryIndex];
             // Lay out char arrays for haiku lines
             var kanaChars = new char[3][];
             var kanaCharsEntry = entry[haikuKanaIndex].Split(',');
@@ -175,7 +176,7 @@ public class HaikuDatabase : ScriptableObject
             // Read additional data
             var haikuName = entry[haikuNameIndex];
             var haikuTranslation = entry[haikuTranslationIndex].Split(',');
-            var haikuRoumaji = entry[haikuRoumajiIndex ].Split(',');
+            var haikuRoumaji = entry[haikuRoumajiIndex].Split(',');
 
             // Add new haiku to list
             var newHaiku = new Haiku(
@@ -184,12 +185,11 @@ public class HaikuDatabase : ScriptableObject
                 haikuRoumaji,
                 haikuTranslation
                 );
+            newHaiku.MotionOptionGroup = EffectsList[entryIndex];
             Haiku.Add(newHaiku);
         }
-
-
-
     }
+
     public Haiku GetStartHaiku()
     {
         if (Haiku == null) GenerateHaiku();
