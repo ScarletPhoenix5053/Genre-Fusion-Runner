@@ -17,7 +17,7 @@ public class KanaPickup : MonoBehaviour
     public void SetKana(Kana to)
     {
         kana = to;
-        display.text = kana.ToString();
+        display.text = kana.Character.ToString();
     }
 
     private void Awake()
@@ -40,12 +40,8 @@ public class KanaPickup : MonoBehaviour
 
     public void Activate()
     {
-        throw new System.NotImplementedException();
-
-        /*
         if (kana != null)
         HaikuCollectionSystem.Instance.CollectKana(kana);
         SafeDestroy.Object(gameObject);
-        */
     }
 }

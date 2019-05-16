@@ -349,7 +349,11 @@ public class ParkourPlayerController2 : MonoBehaviour
 
     #region Public Methods
 
-
+    public MotionOptionGroup GetMotionOptionGroup() => motion;
+    public void SetMotionProfile(MotionOptionGroup newMotionProfile)
+    {
+        motion = newMotionProfile;
+    }
 
     #endregion
     #region Private Methods

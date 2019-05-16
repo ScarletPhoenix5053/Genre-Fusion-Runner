@@ -4,27 +4,17 @@ using UnityEngine;
 
 public class HaikuDisplay : MonoBehaviour
 {
-    /*
     [SerializeField] private Transform inactiveKanaSquares;
     [SerializeField] private List<Transform> kanaLineParents = new List<Transform>(3);
     [SerializeField] private KanaSquare kanaSquareObj;
     
     private KanaSquare[][] kanaSquares;
+    private Dictionary<Kana, Vector2Int> kanaPosition = new Dictionary<Kana, Vector2Int>();
 
-    public void SetKanaSquare(int squareIndex, Kana to)
+    public void ActivateKanaSquare(Kana kana)
     {
-        throw new System.NotImplementedException();
-        //kanaSquareParent.GetChild(squareIndex).GetComponent<KanaSquare>().SetKana(to);
-    } 
-    public void SetKanaSquare(int lineIndex, int squareIndex, Kana to)
-    {
-        var newKana = to;
-        /*
-        Debug.Assert(kanaSquares != null);  
-        Debug.Assert(kanaSquares[lineIndex] != null);
-        Debug.Assert(kanaSquares[lineIndex][squareIndex] != null);
-
-        kanaSquares[lineIndex][squareIndex].SetKana(to: newKana);
+        var squarePos = kanaPosition[kana];
+        kanaSquares[squarePos.x][squarePos.y].SetKana(to: kana);
     }
 
 
@@ -44,16 +34,22 @@ public class HaikuDisplay : MonoBehaviour
     {
         int currentKana = 0;
         kanaSquares = new KanaSquare[lineCount][];
+        var allKana = haiku.ToKana();
         for (int l = 0; l < lineCount; l++)
         {
-            kanaSquares[l] = new KanaSquare[haiku.KanaCount(l+1)];
-            for (int k = 0; k < haiku.KanaCount(l+1); k++)
+            kanaSquares[l] = new KanaSquare[haiku.Lines[l].Length];
+            for (int k = 0; k < haiku.Lines[l].Length; k++)
             {
+                // Initialize kana square
                 var newKanaGo = inactiveKanaSquares.GetChild(currentKana).gameObject;
                 newKanaGo.SetActive(true);
                 newKanaGo.transform.SetParent(kanaLineParents[l]);
                 newKanaGo.name = "KanaSquare (" + l + "," + k + ")";
+
+                // Store kana square info
                 kanaSquares[l][k] = newKanaGo.GetComponent<KanaSquare>();
+                kanaPosition.Add(allKana[currentKana], new Vector2Int(l, k));
+
                 currentKana++;
             }
         }
@@ -78,5 +74,4 @@ public class HaikuDisplay : MonoBehaviour
             }
         }
     }
-    */
 }

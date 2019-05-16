@@ -11,6 +11,19 @@ public class Haiku
 
     public MotionOptionGroup MotionOptionGroup;
 
+    public int KanaCount
+    {
+        get
+        {
+            var count = 0;
+            for (int i = 0; i < Lines.Length; i++)
+            {
+                count += Lines[i].Length;
+            }
+            return count;
+        }
+    }
+
     public Haiku(string name, Kana[][] lines, string[] roumaji, string[] translation)
     {
         Name = name;
@@ -44,6 +57,21 @@ public class Haiku
             + Translation[1] + " / "
             + Translation[2];
     }
+
+    public Kana[] ToKana()
+    {
+        var allKana = new Kana[KanaCount];
+        var currentKanaIndex = 0;
+        for (int i = 0; i < Lines.Length; i++)
+        {
+            for (int n = 0; n < Lines[i].Length; n++)
+            {
+                allKana[currentKanaIndex] = Lines[i][n];
+                currentKanaIndex++;
+            }
+        }
+        return allKana;
+    }
 }
 
 [CreateAssetMenu(fileName = "Haiku Database", menuName = "Haiku/Haiku Database")]
@@ -57,6 +85,10 @@ public class HaikuDatabase : ScriptableObject
     [SerializeField]
     [Tooltip("Directory of data file")]
     private string haikuDataPath;
+
+    [Header("Effects")]
+    public MotionOptionGroup DefaultEffect;
+    public List<MotionOptionGroup> EffectsList;
 
     public List<Haiku> Haiku { get; set; }
 
@@ -111,11 +143,6 @@ public class HaikuDatabase : ScriptableObject
         // For each entry:
         foreach (string[] entry in csvEntries)
         {
-            foreach (string dataEntry in entry)
-            {
-                Debug.Log(dataEntry);
-            }
-
             // Lay out char arrays for haiku lines
             var kanaChars = new char[3][];
             var kanaCharsEntry = entry[haikuKanaIndex].Split(',');
@@ -162,6 +189,14 @@ public class HaikuDatabase : ScriptableObject
 
 
 
+    }
+    public Haiku GetStartHaiku()
+    {
+        if (Haiku == null) GenerateHaiku();
+
+        if (Haiku.Count == 0) Debug.LogError("Should have at least one haiku parsed from csv");
+
+        return Haiku[0];
     }
 
     public string[] GetHaikuPrintouts()

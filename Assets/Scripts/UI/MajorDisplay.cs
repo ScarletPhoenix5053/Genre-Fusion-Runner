@@ -16,7 +16,7 @@ public class MajorDisplay : MonoBehaviour
 
     public void Show(Kana kana)
     {
-        this.kana.text = kana.ToString();
+        this.kana.text = kana.Character.ToString();
         anim.SetTrigger("Small");
     }
     public void Show(Haiku haiku)
