@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e754b709a9b1279448cd344faae95a68, type: 3}
-  m_Name: Dragonfly.motionProfile
+  m_Name: Airstep.motionProfile
   m_EditorClassIdentifier: 
   InstantWalkAcceleration: 0.9
   WalkSpeed: 5

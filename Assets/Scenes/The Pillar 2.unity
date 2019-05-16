@@ -1454,6 +1454,12 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 338784925}
   m_PrefabAsset: {fileID: 0}
+--- !u!224 &398790906 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 7544838251590758907, guid: 04709c125a0a33148ac375561e1aed38,
+    type: 3}
+  m_PrefabInstance: {fileID: 1945584337}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &414672377 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7002988144853338943, guid: 05a7ab750eee27444a3cc2bf8eec918e,
@@ -2969,6 +2975,12 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1004833351}
   m_PrefabAsset: {fileID: 0}
+--- !u!224 &1019927554 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 7544838251303005885, guid: 04709c125a0a33148ac375561e1aed38,
+    type: 3}
+  m_PrefabInstance: {fileID: 1945584337}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1062393959
 GameObject:
   m_ObjectHideFlags: 0
@@ -3236,6 +3248,12 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7002988144853338943, guid: 05a7ab750eee27444a3cc2bf8eec918e,
     type: 3}
   m_PrefabInstance: {fileID: 258005940}
+  m_PrefabAsset: {fileID: 0}
+--- !u!224 &1116456743 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 7544838252026306794, guid: 04709c125a0a33148ac375561e1aed38,
+    type: 3}
+  m_PrefabInstance: {fileID: 1945584337}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1118801684
 PrefabInstance:
@@ -4421,6 +4439,12 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1552252057}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!224 &1602435925 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 7544838250347432883, guid: 04709c125a0a33148ac375561e1aed38,
+    type: 3}
+  m_PrefabInstance: {fileID: 1945584337}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1612651511
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5732,10 +5756,73 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.x
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 7544838251775343264, guid: 04709c125a0a33148ac375561e1aed38, type: 3}
-    - {fileID: 7544838251775343271, guid: 04709c125a0a33148ac375561e1aed38, type: 3}
+    - target: {fileID: 7544838251775343264, guid: 04709c125a0a33148ac375561e1aed38,
+        type: 3}
+      propertyPath: mainDisplay
+      value: 
+      objectReference: {fileID: 1949655289}
+    - target: {fileID: 7544838251775343264, guid: 04709c125a0a33148ac375561e1aed38,
+        type: 3}
+      propertyPath: kanaPickupObj
+      value: 
+      objectReference: {fileID: 1566759570, guid: 05a7ab750eee27444a3cc2bf8eec918e,
+        type: 3}
+    - target: {fileID: 7544838251775343264, guid: 04709c125a0a33148ac375561e1aed38,
+        type: 3}
+      propertyPath: haikuDatabase
+      value: 
+      objectReference: {fileID: 11400000, guid: 2468e86b85549fc4186e5b10dcbcfa73,
+        type: 2}
+    - target: {fileID: 7544838251775343264, guid: 04709c125a0a33148ac375561e1aed38,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7544838251775343271, guid: 04709c125a0a33148ac375561e1aed38,
+        type: 3}
+      propertyPath: kanaLineParents.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7544838251775343271, guid: 04709c125a0a33148ac375561e1aed38,
+        type: 3}
+      propertyPath: inactiveKanaSquares
+      value: 
+      objectReference: {fileID: 1116456743}
+    - target: {fileID: 7544838251775343271, guid: 04709c125a0a33148ac375561e1aed38,
+        type: 3}
+      propertyPath: kanaLineParents.Array.data[0]
+      value: 
+      objectReference: {fileID: 1602435925}
+    - target: {fileID: 7544838251775343271, guid: 04709c125a0a33148ac375561e1aed38,
+        type: 3}
+      propertyPath: kanaLineParents.Array.data[1]
+      value: 
+      objectReference: {fileID: 1019927554}
+    - target: {fileID: 7544838251775343271, guid: 04709c125a0a33148ac375561e1aed38,
+        type: 3}
+      propertyPath: kanaLineParents.Array.data[2]
+      value: 
+      objectReference: {fileID: 398790906}
+    - target: {fileID: 7544838251775343271, guid: 04709c125a0a33148ac375561e1aed38,
+        type: 3}
+      propertyPath: kanaSquareObj
+      value: 
+      objectReference: {fileID: 3696049456620691811, guid: f8efdf4cf020ffb4688738e49a4660cb,
+        type: 3}
+    m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 04709c125a0a33148ac375561e1aed38, type: 3}
+--- !u!114 &1949655289 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 120333180729939568, guid: 04709c125a0a33148ac375561e1aed38,
+    type: 3}
+  m_PrefabInstance: {fileID: 1945584337}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 812d8d8417a9f7e4495a595e18e50432, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1953813649
 GameObject:
   m_ObjectHideFlags: 0

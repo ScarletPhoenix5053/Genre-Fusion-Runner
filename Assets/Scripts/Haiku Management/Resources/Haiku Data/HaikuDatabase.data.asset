@@ -17,5 +17,5 @@ MonoBehaviour:
     Management/Resources/Haiku Data/HaikuDatabase.csv
   DefaultEffect: {fileID: 11400000, guid: afd15a6fddc1fbb41ad41f5bd89100a0, type: 2}
   EffectsList:
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 11400000, guid: afd15a6fddc1fbb41ad41f5bd89100a0, type: 2}
+  - {fileID: 11400000, guid: 8ea0ead2ced0af54186053cd285c8a48, type: 2}
