@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class HaikuCollectionSystem : MonoBehaviour
 {
+    /*
     #region Singleton Pattern
     public static HaikuCollectionSystem Instance { get; private set; }
     private void ValidateSingleton()
@@ -92,7 +93,7 @@ public class HaikuCollectionSystem : MonoBehaviour
                     )
                     .GetComponent<KanaPickup>();
             kanaPickup.SetKana(to: kana);
-        }*/
+        }
     }
     #endregion
     #region Display
@@ -172,7 +173,6 @@ public class HaikuCollectionSystem : MonoBehaviour
         Debug.Log(newHaiku.LineToEnglish(1));
         Debug.Log(newHaiku.LineToKana(2));
         Debug.Log(newHaiku.LineToString(3));
-        */
 
         return newHaiku;
     }
@@ -205,6 +205,7 @@ public class HaikuCollectionSystem : MonoBehaviour
         Debug.Log(newKana.Meaning);
     }
     #endregion
+*/
 }
-public delegate void HaikuCollectionEventHandler(Kana kana);
-public delegate void HaikuCompletionEventHandler(Haiku haiku);
+//public delegate void HaikuCollectionEventHandler(Kana kana);
+//public delegate void HaikuCompletionEventHandler(Haiku haiku);

@@ -40,8 +40,12 @@ public class KanaPickup : MonoBehaviour
 
     public void Activate()
     {
+        throw new System.NotImplementedException();
+
+        /*
         if (kana != null)
         HaikuCollectionSystem.Instance.CollectKana(kana);
         SafeDestroy.Object(gameObject);
+        */
     }
 }

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class HaikuDisplay : MonoBehaviour
 {
+    /*
     [SerializeField] private Transform inactiveKanaSquares;
     [SerializeField] private List<Transform> kanaLineParents = new List<Transform>(3);
     [SerializeField] private KanaSquare kanaSquareObj;
@@ -22,7 +23,7 @@ public class HaikuDisplay : MonoBehaviour
         Debug.Assert(kanaSquares != null);  
         Debug.Assert(kanaSquares[lineIndex] != null);
         Debug.Assert(kanaSquares[lineIndex][squareIndex] != null);
-        */
+
         kanaSquares[lineIndex][squareIndex].SetKana(to: newKana);
     }
 
@@ -77,4 +78,5 @@ public class HaikuDisplay : MonoBehaviour
             }
         }
     }
+    */
 }

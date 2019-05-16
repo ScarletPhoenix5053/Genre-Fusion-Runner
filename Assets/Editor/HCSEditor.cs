@@ -4,6 +4,7 @@ using UnityEditor;
 [CustomEditor(typeof(HaikuCollectionSystem))]
 public class HCSEditor : Editor
 {
+    /*
     public override void OnInspectorGUI()
     {
         base.OnInspectorGUI();
@@ -16,4 +17,5 @@ public class HCSEditor : Editor
         }
         
     }
+    */
 }

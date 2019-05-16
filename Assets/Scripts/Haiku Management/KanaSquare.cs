@@ -7,6 +7,7 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Text))]
 public class KanaSquare : MonoBehaviour
 {
+    /*
     [SerializeField] private bool clearTextOnAwake;
     private Text display;
     private void Awake()
@@ -26,4 +27,5 @@ public class KanaSquare : MonoBehaviour
         kana = default;
         display.text = "";
     }
+    */
 }

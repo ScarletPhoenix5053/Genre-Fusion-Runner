@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-public class WindEffect : Effect
+public class LEGACY_WindEffect : MonoBehaviour
 {
     [SerializeField] private float strength = 100f;
     [SerializeField] private Vector3 direction = Vector3.left;
