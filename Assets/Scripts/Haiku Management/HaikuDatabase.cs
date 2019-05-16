@@ -2,13 +2,14 @@
 using System.IO;
 using System.Collections.Generic;
 
-public struct Haiku
+public class Haiku
 {
     public readonly string Name;
     public readonly Kana[][] Lines;
     public readonly string[] Roumaji;
     public readonly string[] Translation;
-    //public readonly Effect[] Effects;
+
+    public MotionOptionGroup MotionOptionGroup;
 
     public Haiku(string name, Kana[][] lines, string[] roumaji, string[] translation)
     {
@@ -16,6 +17,32 @@ public struct Haiku
         Lines = lines;
         Roumaji = roumaji;
         Translation = translation;
+    }
+
+    public override string ToString()
+    {
+        // Render each line to string
+        var kanaLines = new string[Lines.Length];
+        for (int i = 0; i < Lines.Length; i++)
+        {
+            var kanaLine = "";
+            for (int n = 0; n < Lines[i].Length; n++)
+            {
+                kanaLine += Lines[i][n].Character;
+            }
+            kanaLines[i] = kanaLine;
+        }
+
+        return Name + "\r\n"
+            + kanaLines[0] + "/"
+            + kanaLines[1] + "/"
+            + kanaLines[2] + "\r\n"
+            + Roumaji[0] + " / "
+            + Roumaji[1] + " / "
+            + Roumaji[2] + "\r\n"
+            + Translation[0] + " / "
+            + Translation[1] + " / "
+            + Translation[2];
     }
 }
 
@@ -31,30 +58,119 @@ public class HaikuDatabase : ScriptableObject
     [Tooltip("Directory of data file")]
     private string haikuDataPath;
 
-    private List<Haiku> Haiku;
+    public List<Haiku> Haiku { get; set; }
+
+    private const int haikuNameIndex = 0;
+    private const int haikuKanaIndex = 1;
+    private const int haikuRoumajiIndex = 2;
+    private const int haikuTranslationIndex = 3;
 
     public void GenerateHaiku()
     {
-        // Validate haiku data path
+        // Validate haiku data path        
+        if (!File.Exists(haikuDataPath))
+        {
+            Debug.LogWarning("File path: " + haikuDataPath + " does not point to a file.");
+        }
 
         // Clear old list
+        Haiku = new List<Haiku>();
 
         // Split file into entries
+        var csvEntries = new List<string[]>();
+        using (StreamReader reader = new StreamReader(haikuDataPath))
+        {
+            var lines = new List<string>();
+            var currentLine = "";
+            var currentLineN = 0;
+
+            do
+            {
+                currentLine = reader.ReadLine();
+                if (currentLine != null)
+                {
+                    currentLineN++;
+                    lines.Add(currentLine);
+                }
+            }
+            while (currentLine != null);
+
+            Debug.Assert(lines.Count % 5 == 0);
+
+            for (int i = 0; i < lines.Count; i+=5)
+            {
+                var csvEntry = new string[4];
+                for (int line = 0; line < 4; line++)
+                {
+                    csvEntry[line] = lines[i + line];
+                }
+                csvEntries.Add(csvEntry);
+            }
+        }
 
         // For each entry:
-        
+        foreach (string[] entry in csvEntries)
+        {
+            foreach (string dataEntry in entry)
+            {
+                Debug.Log(dataEntry);
+            }
+
             // Lay out char arrays for haiku lines
-    
+            var kanaChars = new char[3][];
+            var kanaCharsEntry = entry[haikuKanaIndex].Split(',');
+            for (int i = 0; i < 3; i++)
+            {
+                kanaChars[i] = kanaCharsEntry[i].ToCharArray();
+            }
+
             // Convert to kana data structs
+            kanaDatabase.GenerateDatabase();
+            var haikuKana = new Kana[3][];
+            for (int i = 0; i < 3; i++)
+            {
+                haikuKana[i] = new Kana[kanaChars[i].Length];
+                for (int n = 0; n < kanaChars[i].Length; n++)
+                {
+                    // Look up kana database
+                    var kana = kanaDatabase.RetrieveKana(kanaChars[i][n]);
 
-                // Look up kana database
-                // Create new struct with blank fields if none found
+                    // Create new class with blank fields if none found
+                    if (kana == null)
+                    {
+                        kana = new Kana(kanaChars[i][n], "", "");
+                    }
 
+                    haikuKana[i][n] = kana;
+                }
+            }
 
-            // Read translation/roumaji data
+            // Read additional data
+            var haikuName = entry[haikuNameIndex];
+            var haikuTranslation = entry[haikuTranslationIndex].Split(',');
+            var haikuRoumaji = entry[haikuRoumajiIndex ].Split(',');
 
             // Add new haiku to list
-        
+            var newHaiku = new Haiku(
+                haikuName,
+                haikuKana,
+                haikuRoumaji,
+                haikuTranslation
+                );
+            Haiku.Add(newHaiku);
+        }
 
+
+
+    }
+
+    public string[] GetHaikuPrintouts()
+    {
+        var returnStringArray = new string[Haiku.Count];
+        for (int i = 0; i < Haiku.Count; i++)
+        {
+            returnStringArray[i] = Haiku[i].ToString();
+        }
+        return returnStringArray;
     }
 }

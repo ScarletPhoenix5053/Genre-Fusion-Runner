@@ -3,7 +3,7 @@ using UnityEditor;
 using System.IO;
 using System.Collections.Generic;
 
-public struct Kana
+public class Kana
 {
     public readonly char Character;
     public readonly string Sound;
@@ -22,12 +22,17 @@ public struct Kana
 [CreateAssetMenu(fileName = "Kana Database", menuName = "Haiku/Kana Database")]
 public class KanaDatabase : ScriptableObject
 {
+    private void Awake()
+    {
+        Debug.Log("Awake");
+    }
+
     [Header("Path")]
     [SerializeField]
     [Tooltip("Directory of data file")]
     private string kanaDataPath;
 
-    private Dictionary<char, Kana> kanaDictionary;
+    [SerializeField] private Dictionary<char, Kana> kanaDictionary;
 
     public void GenerateDatabase()
     {
@@ -78,11 +83,20 @@ public class KanaDatabase : ScriptableObject
 
     public Kana RetrieveKana(char kanaCharacter)
     {
-        throw new System.NotImplementedException();
+        if (kanaDictionary.ContainsKey(kanaCharacter))
+        {
+            return kanaDictionary[kanaCharacter];
+        }
+        else
+        {
+            return null;
+        }
     }
 
     public string GetPrintoutOfAllKana()
     {
+        if (kanaDictionary == null) return null;
+
         var printout = "";
         
         foreach (KeyValuePair<char, Kana> kanaEntry in kanaDictionary)

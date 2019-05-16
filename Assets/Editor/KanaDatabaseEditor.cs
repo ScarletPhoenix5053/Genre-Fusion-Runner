@@ -15,11 +15,10 @@ public class KanaDatabaseEditor : Editor
         if (GUILayout.Button("Generate Database"))
         {
             kanaDatabase.GenerateDatabase();
-            kanaPrintout = "";
-            kanaPrintout = kanaDatabase.GetPrintoutOfAllKana();
         }
 
         // Render all kana
-        EditorGUILayout.HelpBox(kanaPrintout, MessageType.None);
+        kanaPrintout = kanaDatabase.GetPrintoutOfAllKana();
+        if (kanaPrintout != null) EditorGUILayout.HelpBox(kanaPrintout, MessageType.None);
     }
 }

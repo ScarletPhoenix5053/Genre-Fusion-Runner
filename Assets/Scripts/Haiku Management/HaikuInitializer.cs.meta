@@ -1,10 +1,9 @@
 fileFormatVersion: 2
-guid: b7db4825888609b458bda99edd9702a2
+guid: 5e30930a04ad7014ba1d8e11e28fd21d
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences:
-  - kanaDatabase: {fileID: 11400000, guid: 6595984d9f7b1294ebc9c0502dad17a1, type: 2}
+  defaultReferences: []
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
