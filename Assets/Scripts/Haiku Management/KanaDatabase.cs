@@ -24,7 +24,7 @@ public class KanaDatabase : ScriptableObject
 {
     [Header("Path")]
     [SerializeField]
-    [Tooltip("Directory of file inside resources folder")]
+    [Tooltip("Directory of data file")]
     private string kanaDataPath;
 
     private Dictionary<char, Kana> kanaDictionary;
