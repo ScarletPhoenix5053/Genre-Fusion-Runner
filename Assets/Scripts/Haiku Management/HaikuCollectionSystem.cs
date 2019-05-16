@@ -1,10 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using SCARLET.DbOverlay;
 
 public class HaikuCollectionSystem : MonoBehaviour
-{
-    
+{    
     #region Singleton Pattern
     public static HaikuCollectionSystem Instance { get; private set; }
     private void ValidateSingleton()
@@ -20,13 +20,18 @@ public class HaikuCollectionSystem : MonoBehaviour
     [SerializeField] MajorDisplay mainDisplay;
     private HaikuDisplay haikuDisplay;
 
+    private const string idActiveHaiku = "Active Haiku: ";
+
     private void Awake()
     {
         ValidateSingleton();
+
+        DebugOverlay.CreateLog(idActiveHaiku);
     }
     private void Start()
     {
         haiku = haikuDatabase.GetStartHaiku();
+        DebugOverlay.UpdateLog(idActiveHaiku, haiku.Name);
 
         // Init Display
         haikuDisplay = GetComponent<HaikuDisplay>();
@@ -35,7 +40,7 @@ public class HaikuCollectionSystem : MonoBehaviour
         // Init Events
         OnCollection += UpdateHaikuDisplay;
         OnCollection += mainDisplay.Show;        
-        OnCompletion += ResetDisplayAfterDelay;
+        OnCompletion += GetNewHaiku;
 
         // Init Kana Pickup System
         kanaPickupCollection = GameObject.FindGameObjectWithTag(kanaPickupCollectionTag).transform;
@@ -67,7 +72,10 @@ public class HaikuCollectionSystem : MonoBehaviour
     private void GenerateKanaPickupsFor(Haiku nextHaiku)
     {
         var allKana = nextHaiku.ToKana();
-        var posZ = 0;
+        if (allKana.Length > kanaPickupCollection.childCount)
+        {
+            Debug.LogError("Not enough pickups for haiku: " + nextHaiku.Name);
+        }
         for (int k = 0; k < allKana.Length; k++)
         {
             var kanaPickup = kanaPickupCollection.GetChild(k).GetComponent<KanaPickup>();
@@ -81,6 +89,16 @@ public class HaikuCollectionSystem : MonoBehaviour
     private const float displayResetDelay = 1f;
     private void ResetDisplayAfterDelay(Haiku haiku) => Invoke("ResetDisplay", displayResetDelay);
     private void ResetDisplay() => haikuDisplay.ResetDisplay();
+    private void GetNewHaiku(Haiku oldHaiku)
+    {
+        do
+        {
+            haiku = haikuDatabase.GetRandomHaiku();
+        }
+        while (haiku != oldHaiku);
+
+        DebugOverlay.UpdateLog(idActiveHaiku, haiku.Name);
+    }
 
     private void UpdateHaikuDisplay(Kana newKana)
     {

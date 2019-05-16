@@ -198,6 +198,11 @@ public class HaikuDatabase : ScriptableObject
 
         return Haiku[0];
     }
+    public Haiku GetRandomHaiku()
+    {
+        var randomIndex = Random.Range(0, Haiku.Count);
+        return Haiku[randomIndex];
+    }
 
     public string[] GetHaikuPrintouts()
     {
