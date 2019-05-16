@@ -73,15 +73,24 @@ public class KanaDatabase : ScriptableObject
             }
 
             // Log all to console
-            foreach (KeyValuePair<char, Kana> kanaEntry in kanaDictionary)
-            {
-                Debug.Log("Key: " + kanaEntry.Key + " | Value: " + kanaEntry.Value);
-            }
         }
     }
 
     public Kana RetrieveKana(char kanaCharacter)
     {
         throw new System.NotImplementedException();
+    }
+
+    public string GetPrintoutOfAllKana()
+    {
+        var printout = "";
+        
+        foreach (KeyValuePair<char, Kana> kanaEntry in kanaDictionary)
+        {
+            printout += ("Key: " + kanaEntry.Key + " | Value: " + kanaEntry.Value) + "\r\n";
+        }
+        printout = printout.TrimEnd(new char[] { '\r', '\n' });
+
+        return printout;
     }
 }

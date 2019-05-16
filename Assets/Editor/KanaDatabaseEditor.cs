@@ -4,6 +4,8 @@ using UnityEditor;
 [CustomEditor(typeof(KanaDatabase))]
 public class KanaDatabaseEditor : Editor
 {
+    private string kanaPrintout;
+
     public override void OnInspectorGUI()
     {
         base.OnInspectorGUI();
@@ -13,8 +15,11 @@ public class KanaDatabaseEditor : Editor
         if (GUILayout.Button("Generate Database"))
         {
             kanaDatabase.GenerateDatabase();
+            kanaPrintout = "";
+            kanaPrintout = kanaDatabase.GetPrintoutOfAllKana();
         }
 
-        // Render out full database in editor
+        // Render all kana
+        EditorGUILayout.HelpBox(kanaPrintout, MessageType.None);
     }
 }

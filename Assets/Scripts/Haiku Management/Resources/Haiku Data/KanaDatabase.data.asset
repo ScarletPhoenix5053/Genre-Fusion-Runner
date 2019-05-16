@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: KanaDatabase.data
   m_EditorClassIdentifier: 
   kanaDataPath: C:/Projects/Fucking Parkour and Shit/Kinetic Translation/Assets/Scripts/Haiku
-    Management/Resources/Haiku Data
+    Management/Resources/Haiku Data/KanaDatabase.csv
