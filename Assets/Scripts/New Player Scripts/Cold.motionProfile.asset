@@ -10,27 +10,27 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e754b709a9b1279448cd344faae95a68, type: 3}
-  m_Name: Dragonfly.motionProfile
+  m_Name: Cold.motionProfile
   m_EditorClassIdentifier: 
-  InstantWalkAcceleration: 0.9
-  WalkSpeed: 5
-  SprintExtraSpeed: 5
-  GroundedFriction: 50
+  InstantWalkAcceleration: 0.425
+  WalkSpeed: 2
+  SprintExtraSpeed: 3
+  GroundedFriction: 20
   AirFriction: 10
-  WallrunFriction: 35
-  SlideFriction: 35
-  GroundedJumpStrength: 10
+  WallrunFriction: 30
+  SlideFriction: 15
+  GroundedJumpStrength: 12
   GroundedJumpBoost: 1
   WallJumpStrength: 6
   WallJumpBoost: 6
   ClimbJumpForce: 4
-  Gravity: 8
-  AirStrafeForce: 5
-  WallrunSpeed: 12
+  Gravity: 22
+  AirStrafeForce: 2.2
+  WallrunSpeed: 8
   WallrunMinStartSpeed: 5
   WallrunMinStaySpeed: 0
   ClimbMaxDuration: 1
-  ClimbSpeed: 5
+  ClimbSpeed: 2.5
   SlideMinSpeed: 10
   SlideStartForce: 15
   SlideStartTime: 1

@@ -18,4 +18,6 @@ MonoBehaviour:
   DefaultEffect: {fileID: 11400000, guid: afd15a6fddc1fbb41ad41f5bd89100a0, type: 2}
   EffectsList:
   - {fileID: 11400000, guid: afd15a6fddc1fbb41ad41f5bd89100a0, type: 2}
+  - {fileID: 11400000, guid: afd15a6fddc1fbb41ad41f5bd89100a0, type: 2}
+  - {fileID: 11400000, guid: c4fe668517735944b996ccd08df9c0d5, type: 2}
   - {fileID: 11400000, guid: 8ea0ead2ced0af54186053cd285c8a48, type: 2}
