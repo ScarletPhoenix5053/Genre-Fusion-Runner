@@ -66,6 +66,8 @@ public class ParkourPlayerController2 : MonoBehaviour
     {
         // Locate refs component
         refs = GetComponent<PlayerRefs2>();
+        Debug.Assert(refs != null);
+        Debug.Assert(refs.CoalescingForce != null);
 
         // Create and/or init sub-components
         inputGroup = new KBMInputGroup(prefs);
@@ -590,4 +592,11 @@ public class ParkourPlayerController2 : MonoBehaviour
         DebugOverlay.UpdateLog(idCharFwdSpeed, refs.CoalescingForce.ForwardVel.ToString());
     }
     #endregion
+}
+public enum CharacterState
+{
+    Normal,
+    Wallrun,
+    Climbing,
+    Slide
 }

@@ -9,30 +9,30 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e754b709a9b1279448cd344faae95a68, type: 3}
+  m_Script: {fileID: 11500000, guid: b1645477f12ca2048864530639505784, type: 3}
   m_Name: Butterfly.motionProfile
   m_EditorClassIdentifier: 
-  InstantWalkAcceleration: 0.713
+  InstantWalkAcceleration: 0.9
   WalkSpeed: 5
   SprintExtraSpeed: 5
-  GroundedFriction: 40
+  GroundedFriction: 50
   AirFriction: 10
-  WallrunFriction: 30
+  WallrunFriction: 35
   SlideFriction: 35
-  GroundedJumpStrength: 10
-  GroundedJumpBoost: 1
+  GroundedJumpStrength: 12
+  GroundedJumpBoost: 2
   WallJumpStrength: 6
-  WallJumpBoost: 4
+  WallJumpBoost: 6
   ClimbJumpForce: 4
   AirJumps: 0
-  Gravity: 5
-  AirStrafeForce: 4.5
+  Gravity: 22
+  AirStrafeForce: 2.2
   WallrunSpeed: 12
   WallrunMinStartSpeed: 5
   WallrunMinStaySpeed: 0
   ClimbMaxDuration: 1
   ClimbSpeed: 5
-  SlideMinSpeed: 10
+  SlideMinSpeed: 1
   SlideStartForce: 15
   SlideStartTime: 1
   SlideStrafeMaxSpeed: 3

@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: db7091e21ecf43d4686fa8e982df009d, type: 3}
+  m_Script: {fileID: 11500000, guid: 313ea84f9547cbb479f26427c7893f0b, type: 3}
   m_Name: Player Prefrences
   m_EditorClassIdentifier: 
   ControlType: 0
@@ -22,5 +22,5 @@ MonoBehaviour:
   KeySprint: 304
   AxisMouseX: Mouse X
   AxisMouseY: Mouse Y
-  MouseSensitivity: 3
+  MouseSensitivity: 1
   LockCursor: 1

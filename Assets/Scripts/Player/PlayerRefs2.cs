@@ -7,10 +7,6 @@ public class PlayerRefs2 : MonoBehaviour
     public CameraController Cam;
     [Header("Motion Controllers")]
     public CoalescingForce CoalescingForce;
-    public GroundedMotionController GroundedMotionController;
-    public SlideMotionController2 SlideMotionController;
-    public WallrunMotionController2 WallrunMotionController;
-    public WallClimbMotionController WallClimbMotionController;
     [Header("Physics and Motion")]
     public GroundChecker GroundChecker;
     public CapsuleCollider MainCollider;
