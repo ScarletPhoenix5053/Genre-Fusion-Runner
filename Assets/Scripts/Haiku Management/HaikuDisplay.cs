@@ -86,7 +86,7 @@ public class HaikuDisplay : MonoBehaviour
         InitKanaSquares();
     }
 
-    private const int kanaSquaresPerLine = 8;
+    private const int kanaSquaresPerLine = 12;
     private void InitKanaSquares()
     {
         if (kanaLineParents.Count != lineCount) throw new LineOutOfRangeException("Must have exactly threee transforms in kanaLineParents array.");

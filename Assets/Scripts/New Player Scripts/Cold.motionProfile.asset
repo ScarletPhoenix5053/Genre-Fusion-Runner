@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e754b709a9b1279448cd344faae95a68, type: 3}
   m_Name: Cold.motionProfile
   m_EditorClassIdentifier: 
-  InstantWalkAcceleration: 0.425
+  InstantWalkAcceleration: 0.316
   WalkSpeed: 2
   SprintExtraSpeed: 3
-  GroundedFriction: 20
+  GroundedFriction: 15
   AirFriction: 10
   WallrunFriction: 30
   SlideFriction: 15
@@ -24,6 +24,7 @@ MonoBehaviour:
   WallJumpStrength: 6
   WallJumpBoost: 6
   ClimbJumpForce: 4
+  AirJumps: 0
   Gravity: 22
   AirStrafeForce: 2.2
   WallrunSpeed: 8

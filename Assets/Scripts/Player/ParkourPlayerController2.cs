@@ -20,6 +20,8 @@ public class ParkourPlayerController2 : MonoBehaviour
     #region Motion
     public float Speed => refs.CoalescingForce.Speed;
     protected bool Grounded => refs.GroundChecker.Grounded;
+
+    private int airJumpsRemaining = 0;
     #endregion
 
     #region Wallrun
@@ -150,13 +152,23 @@ public class ParkourPlayerController2 : MonoBehaviour
                     cf.AddForce(motionForce);
 
                     // Try jump
-                    if (jump && Grounded)
+                    if (jump)
                     {
-                        Jump(strength: this.motion.GroundedJumpStrength);
-                        LateralBoost(inputMotion.Flatten().normalized, this.motion.GroundedJumpBoost);
+                        if (Grounded)
+                        {
+                            Jump(strength: this.motion.GroundedJumpStrength);
+                            LateralBoost(inputMotion.Flatten().normalized, this.motion.GroundedJumpBoost);
+                        }
+                        else if (airJumpsRemaining > 0)
+                        {
+                            airJumpsRemaining--;
+                            Jump(strength: this.motion.GroundedJumpStrength);
+                            LateralBoost(inputMotion.Flatten().normalized, this.motion.GroundedJumpBoost);
+                        }
                     }
 
                 }
+
                 // Try wallrun
                 if (!Grounded && Speed > this.motion.WallrunMinStartSpeed)
                 {
@@ -327,6 +339,9 @@ public class ParkourPlayerController2 : MonoBehaviour
     }
     private void FixedUpdate()
     {
+        // Reset jumps on grounding
+        if (Grounded) airJumpsRemaining = motion.AirJumps;
+
         if (state == CharacterState.Normal)
         {
             // If grounded, use ground friction
@@ -337,7 +352,7 @@ public class ParkourPlayerController2 : MonoBehaviour
             else
             {
                 refs.Drag.DragConstant = motion.AirFriction;
-            }
+            }            
         }
         // Try grav
         {

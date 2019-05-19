@@ -22,6 +22,9 @@ public class MotionOptionGroup : ScriptableObject
     public float WallJumpBoost = 6f;
     public float ClimbJumpForce = 4f;
 
+    [Header("Air Jumps")]
+    public int AirJumps = 0;
+
     [Header("Gravity")]
     public float Gravity = 22f;
 

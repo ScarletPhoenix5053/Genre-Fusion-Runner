@@ -24,6 +24,7 @@ MonoBehaviour:
   WallJumpStrength: 6
   WallJumpBoost: 4
   ClimbJumpForce: 4
+  AirJumps: 0
   Gravity: 5
   AirStrafeForce: 4.5
   WallrunSpeed: 12
