@@ -18,7 +18,7 @@ public class HaikuCollectionSystem : MonoBehaviour
     [SerializeField] private KanaPickup kanaPickupObj;
     [Header("Display")]
     [SerializeField] MajorDisplay mainDisplay;
-    private HaikuDisplay haikuDisplay;
+    [SerializeField] private HaikuDisplay haikuDisplay;
 
     private const string idActiveHaiku = "Active Haiku: ";
 
@@ -34,13 +34,15 @@ public class HaikuCollectionSystem : MonoBehaviour
         DebugOverlay.UpdateLog(idActiveHaiku, haiku.Name);
 
         // Init Display
-        haikuDisplay = GetComponent<HaikuDisplay>();
         haikuDisplay.InitDisplay(haiku);
 
         // Init Events
         OnCollection += UpdateHaikuDisplay;
-        OnCollection += mainDisplay.Show;        
-        OnCompletion += GetNewHaiku;
+        OnCollection += mainDisplay.Show;
+        //OnCompletion += GetNewHaiku;
+        //OnCompletion += ResetKanaCounter;
+        LevelManager.OnStageChange += GetNewHaiku;
+        LevelManager.OnStageChange += ResetKanaCounter;
 
         // Init Kana Pickup System
         kanaPickupCollection = GameObject.FindGameObjectWithTag(kanaPickupCollectionTag).transform;
@@ -49,11 +51,13 @@ public class HaikuCollectionSystem : MonoBehaviour
 
     #region Collection System
     private Haiku haiku;
-
-    public static event HaikuCollectionEventHandler OnCollection;
-    public static event HaikuCompletionEventHandler OnCompletion;    
-
+    private Transform kanaPickupCollection;
+    private const string kanaPickupCollectionTag = "Pickup Collection";
     private int KanaCollected = 0;
+
+    public static event HaikuCompletionEventHandler OnCompletion;
+    public static event HaikuCollectionEventHandler OnCollection;
+
     public void CollectKana(Kana collectedKana)
     {
         KanaCollected++;
@@ -61,14 +65,18 @@ public class HaikuCollectionSystem : MonoBehaviour
 
         if (KanaCollected >= haiku.KanaCount)
         {
-            OnCompletion.Invoke(haiku);
-            KanaCollected = 0;
+            CompleteHaiku();
         }
     }
+    public void CompleteHaiku()
+    {
+        OnCompletion?.Invoke(haiku);
+        LevelManager.Instance.BeginStageChange();
+    }
 
-    private Transform kanaPickupCollection;
-    private const string kanaPickupCollectionTag = "Pickup Collection";
-    
+    private void ResetKanaCounter() => KanaCollected = 0;
+    private void ResetKanaCounter(Haiku haiku) => ResetKanaCounter();
+        
     private void GenerateKanaPickupsFor(Haiku nextHaiku)
     {
         var allKana = nextHaiku.ToKana();
@@ -76,24 +84,48 @@ public class HaikuCollectionSystem : MonoBehaviour
         {
             Debug.LogError("Not enough pickups for haiku: " + nextHaiku.Name);
         }
+
+        // Reset all pickups
         for (int k = 0; k < allKana.Length; k++)
         {
             var kanaPickup = kanaPickupCollection.GetChild(k).GetComponent<KanaPickup>();
+            kanaPickup.SetActive(false);
+        }
+
+        // Init a pickup for each kana
+        var pickupUsed = new bool[kanaPickupCollection.childCount];
+        for (int k = 0; k < allKana.Length; k++)
+        {
+            // Get unique random index
+            int uniquePickupIndex;
+            do
+            {
+                uniquePickupIndex = Random.Range(0, kanaPickupCollection.childCount);                
+            }
+            while (pickupUsed[uniquePickupIndex] == true);
+
+            // Init pickup at index
+            var kanaPickup = kanaPickupCollection.GetChild(uniquePickupIndex).GetComponent<KanaPickup>();
             kanaPickup.SetKana(to: allKana[k]);
+            pickupUsed[uniquePickupIndex] = true;
         }
     }
     #endregion
 
     #region Display
+    private const float displayResetDelay = 0f;
 
-    private const float displayResetDelay = 1f;
     private void GeneratePickupsAfterDelay() => Invoke("GeneratePickups", displayResetDelay + 1f);
     private void GeneratePickups() => GenerateKanaPickupsFor(haiku);
+
     private void InitDisplayAfterDelay() => Invoke("InitDisplay", displayResetDelay + 0.5f);
     private void InitDisplay() =>  haikuDisplay.InitDisplay(haiku);
+
     private void ResetDisplayAfterDelay(Haiku haiku) => Invoke("ResetDisplay", displayResetDelay);
     private void ResetDisplayAfterDelay() => Invoke("ResetDisplay", displayResetDelay);
     private void ResetDisplay() => haikuDisplay.ResetDisplay();
+
+    private void GetNewHaiku() => GetNewHaiku(haiku);
     private void GetNewHaiku(Haiku oldHaiku)
     {
         do

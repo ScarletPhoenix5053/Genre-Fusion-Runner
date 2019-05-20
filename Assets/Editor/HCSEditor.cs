@@ -4,7 +4,6 @@ using UnityEditor;
 [CustomEditor(typeof(HaikuCollectionSystem))]
 public class HCSEditor : Editor
 {
-    /*
     public override void OnInspectorGUI()
     {
         base.OnInspectorGUI();
@@ -13,9 +12,8 @@ public class HCSEditor : Editor
         if (GUILayout.Button("Collect next haiku"))
         {
             if (Application.isPlaying)
-            hcs.CollectKana(hcs.NextKana);
+                hcs.CompleteHaiku();
         }
         
     }
-    */
 }

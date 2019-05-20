@@ -32,7 +32,7 @@ MonoBehaviour:
   WallrunMinStaySpeed: 0
   ClimbMaxDuration: 1
   ClimbSpeed: 5
-  SlideMinSpeed: 1
+  SlideMinSpeed: 5
   SlideStartForce: 15
   SlideStartTime: 1
   SlideStrafeMaxSpeed: 3

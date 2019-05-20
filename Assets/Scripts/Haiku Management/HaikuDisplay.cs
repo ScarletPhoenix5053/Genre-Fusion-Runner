@@ -29,7 +29,6 @@ public class HaikuDisplay : MonoBehaviour
     private const int lineCount = 3;
     public void ResetDisplay()
     {
-        Debug.Log("Resetting");
         foreach (KanaSquare[] kanaSquareArray in kanaSquares)
         {
             foreach (KanaSquare kanaSquare in kanaSquareArray)
