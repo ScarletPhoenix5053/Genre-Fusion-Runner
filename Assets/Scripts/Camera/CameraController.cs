@@ -145,7 +145,6 @@ public class CameraController : MonoBehaviour
     public void DipCamera(bool dip)
     {
         dipTarget = dip ? offsetOnAwake.y - cameraDip : offsetOnAwake.y - 0;
-        Debug.Log(dipTarget);
     }
     private void SmoothTowardsTargetDip()
     {
