@@ -33,9 +33,15 @@ public class CameraController : MonoBehaviour
 
     public bool ControlTargetRotation { get; set; } = true;
 
+    private void Awake()
+    {
+        offsetOnAwake = offset;
+    }
     private void Update()
     {
         SmoothTowardsTargetTilt();
+        SmoothTowardsTargetTiltOffset();
+        SmoothTowardsTargetDip();
     }
     public void Turn(Vector2 input, float lagTime = 0f)
     {
@@ -53,7 +59,7 @@ public class CameraController : MonoBehaviour
         SmoothTargetRotation();
 
         // Move position
-        transform.position = (target.position - transform.forward * distFromTarget) + offset;
+        transform.position = (target.position - transform.forward * distFromTarget) + transform.TransformDirection(new Vector3(offset.x, 0, offset.z)) + Vector3.up * offset.y;
     }
 
     float lagTime = 0f;
@@ -86,18 +92,44 @@ public class CameraController : MonoBehaviour
     }
 
     #region Camera Tilt
+    [SerializeField] private float pushOutDistance = 1f;
+    private float pushOutTarget = 0f;
+    private float pushOutVel = 0f;
+
     public void SetTilt(float angle)
     {
-        targetTilt = angle;
+        // Adjust interpolation angle        
+        tiltTarget = angle;
+
+        // Adjust interpolation pos 
+        if (angle != 0f)
+        {
+            // offset x not behacing as expected on walls. 
+            var sign = Mathf.Sign(tiltTarget);
+            pushOutTarget = sign < 0 ? offsetOnAwake.x + pushOutDistance : offsetOnAwake.x - pushOutDistance;
+        }
+        else
+        {
+            pushOutTarget = offsetOnAwake.x;
+        }
     }
-    private float targetTilt = 0f;
-    private float smoothVel = 0f;
+    private float tiltTarget = 0f;
+    private float tiltSmoothVel = 0f;
     private void SmoothTowardsTargetTilt()
     {
         currentRotation.z = Mathf.SmoothDampAngle(
             currentRotation.z,
-            targetTilt,
-            ref smoothVel,
+            tiltTarget,
+            ref tiltSmoothVel,
+            tiltSmoothTime
+            );
+    }
+    private void SmoothTowardsTargetTiltOffset()
+    {
+        offset.x = Mathf.SmoothDampAngle(
+            offset.x,
+            pushOutTarget,
+            ref pushOutVel,
             tiltSmoothTime
             );
     }
@@ -105,19 +137,24 @@ public class CameraController : MonoBehaviour
     #endregion
     #region Camera Dip
     [SerializeField] private float cameraDip = 1f;
-    private bool dipped = false;
+    [SerializeField] private float cameraDipTime = 0.2f;
+    private float dipTarget = 0f;
+    private float dipSmoothVel = 0f;
+    private Vector3 offsetOnAwake;
+
     public void DipCamera(bool dip)
     {
-        if (dip && !dipped)
-        {
-            offset.y -= cameraDip;
-            dipped = true;
-        }
-        else if (dipped)
-        {
-            offset.y += cameraDip;
-            dipped = false;
-        }
+        dipTarget = dip ? offsetOnAwake.y - cameraDip : offsetOnAwake.y - 0;
+        Debug.Log(dipTarget);
+    }
+    private void SmoothTowardsTargetDip()
+    {
+        offset.y = Mathf.SmoothDampAngle(
+            offset.y,
+            dipTarget,
+            ref dipSmoothVel,
+            cameraDipTime
+            );
     }
     #endregion
 }
