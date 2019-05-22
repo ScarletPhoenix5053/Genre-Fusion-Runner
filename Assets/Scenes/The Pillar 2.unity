@@ -1336,11 +1336,6 @@ PrefabInstance:
       propertyPath: Cam
       value: 
       objectReference: {fileID: 1356320224}
-    - target: {fileID: 3948942229280379528, guid: f532107f700a3bd41afc93c426c5e7b2,
-        type: 3}
-      propertyPath: wallCheckDistance
-      value: 1.2
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f532107f700a3bd41afc93c426c5e7b2, type: 3}
 --- !u!1001 &6907245601293996449
