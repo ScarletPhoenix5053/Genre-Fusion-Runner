@@ -32,7 +32,7 @@ public class SessionManager : MonoBehaviour
 
     private const string playerTag = "Player";
     private Transform playerTransform;
-    private Quaternion playerRotationOnLoad;
+    private Vector3 playerRotationOnLoad;
     private Vector3 playerPositionOnLoad;
 
     private void Awake()
@@ -86,8 +86,8 @@ public class SessionManager : MonoBehaviour
         // Store player pos
         GetPlayerTransform();
         playerPositionOnLoad = playerTransform.position;
-        playerRotationOnLoad = playerTransform.rotation;
-        Debug.Log("Storing " + playerPositionOnLoad);
+        playerRotationOnLoad = playerTransform.eulerAngles;
+        Debug.Log("Storing " + playerRotationOnLoad);
 
         // Load
         Debug.Assert(ActiveHaiku != null);
@@ -97,10 +97,11 @@ public class SessionManager : MonoBehaviour
     private void AlignPlayerPosInNewScene(Scene activeScene, LoadSceneMode loadSceneMode) => AlignPlayerPosInNewScene();
     public void AlignPlayerPosInNewScene()
     {
-        Debug.Log("Loading" + playerPositionOnLoad);
+        Debug.Log("Loading" + playerRotationOnLoad);
         GetPlayerTransform();
+        FindObjectOfType<CameraController>().AdjustTarget(playerRotationOnLoad);
         playerTransform.position = playerPositionOnLoad;
-        playerTransform.rotation = playerRotationOnLoad;
+        playerTransform.eulerAngles = playerRotationOnLoad;
     }
 
     private void GetPlayerTransform() => playerTransform = GameObject.FindGameObjectWithTag(playerTag).transform;

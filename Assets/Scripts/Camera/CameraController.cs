@@ -51,15 +51,26 @@ public class CameraController : MonoBehaviour
         pitch = Mathf.Clamp(pitch, pitchMinMax.x, pitchMinMax.y);
 
         // Apply rotation
+        Debug.Log("Cam: " + currentRotation);
         currentRotation = Vector3.SmoothDamp(currentRotation, new Vector3(pitch, yaw, currentRotation.z), ref rotationSmoothVel, rotationSmoothTime);
         transform.eulerAngles = currentRotation;
 
         // Control target rotation
-        this.lagTime = lagTime;
+        //this.lagTime = lagTime;
         SmoothTargetRotation();
 
         // Move position
         transform.position = (target.position - transform.forward * distFromTarget) + transform.TransformDirection(new Vector3(offset.x, 0, offset.z)) + Vector3.up * offset.y;
+    }
+    public void AdjustTarget(Vector3 rot)
+    {
+        Debug.Log("Cam adjust");
+        Debug.Log("Cam before: " + currentRotation);
+        transform.eulerAngles = rot;
+        currentRotation = rot;
+        yaw = rot.y;
+        pitch = rot.x;
+        Debug.Log("Cam after: " + currentRotation);
     }
 
     float lagTime = 0f;
