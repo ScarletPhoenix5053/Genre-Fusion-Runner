@@ -111,8 +111,8 @@ GameObject:
   - component: {fileID: 5395705531146930778}
   - component: {fileID: 3948942229280379541}
   m_Layer: 9
-  m_Name: Neo Character Contoller
-  m_TagString: Untagged
+  m_Name: Character Contoller
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

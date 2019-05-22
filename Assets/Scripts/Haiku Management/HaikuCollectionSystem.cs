@@ -39,14 +39,18 @@ public class HaikuCollectionSystem : MonoBehaviour
         // Init Events
         OnCollection += UpdateHaikuDisplay;
         OnCollection += mainDisplay.Show;
-        //OnCompletion += GetNewHaiku;
-        //OnCompletion += ResetKanaCounter;
-        SessionManager.OnStageChange += GetNewHaiku;
-        SessionManager.OnStageChange += ResetKanaCounter;
+        OnCompletion += ResetKanaCounter;
 
         // Init Kana Pickup System
         kanaPickupCollection = GameObject.FindGameObjectWithTag(kanaPickupCollectionTag).transform;
         GenerateKanaPickupsFor(haiku);
+    }
+    private void OnDestroy()
+    {
+        // Remove event connections
+        OnCollection -= UpdateHaikuDisplay;
+        OnCollection -= mainDisplay.Show;
+        OnCompletion -= ResetKanaCounter;
     }
 
     #region Collection System

@@ -14,6 +14,10 @@ public class MajorDisplay : MonoBehaviour
         anim = GetComponent<Animator>();
         HaikuCollectionSystem.OnCompletion += AnnounceHaikuCompletion;
     }
+    private void OnDestroy()
+    {
+        HaikuCollectionSystem.OnCompletion -= AnnounceHaikuCompletion;
+    }
 
     public void Show(Kana kana)
     {

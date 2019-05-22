@@ -4,5 +4,20 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/The Pillar 2.unity
+    guid: bc38a9a686a7d0e4a820c3d21ee5c2f1
+  - enabled: 1
+    path: Assets/Scenes/The Pillar 2 - Air Step.unity
+    guid: cfcb6670b5d0f4a49b887139310000b3
+  - enabled: 1
+    path: Assets/Scenes/The Pillar 2 - Butterfly.unity
+    guid: ba875a27ca7a88c4bac5e7978db863d4
+  - enabled: 1
+    path: Assets/Scenes/The Pillar 2 - Cold.unity
+    guid: f8eef2a1cde84fb40bb565db3b19615b
+  - enabled: 1
+    path: Assets/Scenes/The Pillar 2 - Moon.unity
+    guid: 3d50a44e2e584574ab89aae99745c94f
   m_configObjects: {}

@@ -376,7 +376,7 @@ public class ParkourPlayerController2 : MonoBehaviour
     }
     public void UpdateMotionProfile(Haiku haiku)
     {
-        SetMotionProfile(haiku.MotionOptionGroup);
+        //SetMotionProfile(haiku.Scene);
     }
 
     #endregion

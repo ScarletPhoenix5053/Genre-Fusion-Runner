@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 using System.IO;
 using System.Collections.Generic;
 
@@ -9,7 +10,7 @@ public class Haiku
     public readonly string[] Roumaji;
     public readonly string[] Translation;
 
-    public MotionOptionGroup MotionOptionGroup;
+    public string Scene;
 
     public int KanaCount
     {
@@ -86,9 +87,9 @@ public class HaikuDatabase : ScriptableObject
     [Tooltip("Directory of data file")]
     private string haikuDataPath;
 
-    [Header("Effects")]
-    public MotionOptionGroup DefaultEffect;
-    public List<MotionOptionGroup> EffectsList;
+    [Header("Scenes")]
+    public string DefaultSceneName;
+    public List<string> HaikuSceneNames;
 
     public List<Haiku> Haiku { get; set; }
 
@@ -185,7 +186,7 @@ public class HaikuDatabase : ScriptableObject
                 haikuRoumaji,
                 haikuTranslation
                 );
-            newHaiku.MotionOptionGroup = EffectsList[entryIndex];
+            newHaiku.Scene = HaikuSceneNames[entryIndex];
             Haiku.Add(newHaiku);
         }
     }

@@ -28,7 +28,7 @@ public class HaikuDatabaseEditor : Editor
         }
 
         // warn if default effect is empty
-        if (haikuDatabase.DefaultEffect == null)
+        if (haikuDatabase.DefaultSceneName == null)
         {
             EditorGUILayout.HelpBox(
                 "Please assign a default effect.",
@@ -37,9 +37,9 @@ public class HaikuDatabaseEditor : Editor
         }
 
         // warn if haiku list length is longer than fx list
-        if (haikuDatabase.Haiku != null && haikuDatabase.EffectsList != null)
+        if (haikuDatabase.Haiku != null && haikuDatabase.HaikuSceneNames != null)
         {
-            if (haikuDatabase.Haiku.Count > haikuDatabase.EffectsList.Count)
+            if (haikuDatabase.Haiku.Count > haikuDatabase.HaikuSceneNames.Count)
             {
                 EditorGUILayout.HelpBox(
                     "There are more haiku than effects. Haiku without a" +
