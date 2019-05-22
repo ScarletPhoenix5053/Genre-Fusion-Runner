@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb1dcf034b2cc0e489b64bb38fee21b4, type: 3}
   m_Name: KanaDatabase.data
   m_EditorClassIdentifier: 
-  kanaDataPath: C:/Projects/Fucking Parkour and Shit/Kinetic Translation/Assets/Scripts/Haiku
+  kanaDataPath: C:/Projects/Kinetic Translation/Kinetic Translation/Assets/Scripts/Haiku
     Management/Resources/Haiku Data/KanaDatabase.csv

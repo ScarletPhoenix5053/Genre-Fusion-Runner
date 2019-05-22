@@ -41,8 +41,8 @@ public class HaikuCollectionSystem : MonoBehaviour
         OnCollection += mainDisplay.Show;
         //OnCompletion += GetNewHaiku;
         //OnCompletion += ResetKanaCounter;
-        LevelManager.OnStageChange += GetNewHaiku;
-        LevelManager.OnStageChange += ResetKanaCounter;
+        SessionManager.OnStageChange += GetNewHaiku;
+        SessionManager.OnStageChange += ResetKanaCounter;
 
         // Init Kana Pickup System
         kanaPickupCollection = GameObject.FindGameObjectWithTag(kanaPickupCollectionTag).transform;
@@ -71,7 +71,7 @@ public class HaikuCollectionSystem : MonoBehaviour
     public void CompleteHaiku()
     {
         OnCompletion?.Invoke(haiku);
-        LevelManager.Instance.BeginStageChange();
+        SessionManager.Instance.BeginStageChange();
     }
 
     private void ResetKanaCounter() => KanaCollected = 0;

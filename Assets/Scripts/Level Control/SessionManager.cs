@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LevelManager : MonoBehaviour
+public class SessionManager : MonoBehaviour
 {
-    public static LevelManager Instance;
+    public static SessionManager Instance;
     private void ValidateSingleton()
     {
         if (Instance == null) Instance = this;
@@ -21,6 +21,7 @@ public class LevelManager : MonoBehaviour
 
     private void Awake()
     {
+        DontDestroyOnLoad(gameObject);
         ValidateSingleton();
         fader.Transparency = 0f;        
     }
