@@ -164,6 +164,7 @@ public class ParkourPlayerController2 : MonoBehaviour
                         else if (airJumpsRemaining > 0)
                         {
                             airJumpsRemaining--;
+                            cf.ResetVelocityY();
                             Jump(strength: this.motion.GroundedJumpStrength);
                             LateralBoost(inputMotion.Flatten().normalized, this.motion.GroundedJumpBoost);
                         }
@@ -342,7 +343,7 @@ public class ParkourPlayerController2 : MonoBehaviour
     private void FixedUpdate()
     {
         // Reset jumps on grounding
-        if (Grounded) airJumpsRemaining = motion.AirJumps;
+        if (Grounded || state == CharacterState.Wallrun) airJumpsRemaining = motion.AirJumps;
 
         if (state == CharacterState.Normal)
         {

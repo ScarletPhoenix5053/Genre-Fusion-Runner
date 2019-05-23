@@ -1101,6 +1101,12 @@ PrefabInstance:
       propertyPath: Cam
       value: 
       objectReference: {fileID: 1356320224}
+    - target: {fileID: 3948942229280379537, guid: f532107f700a3bd41afc93c426c5e7b2,
+        type: 3}
+      propertyPath: motion
+      value: 
+      objectReference: {fileID: 11400000, guid: f83d0b52f2ad83047a22b9c98d6d4e00,
+        type: 2}
     - target: {fileID: 3948942229280379528, guid: f532107f700a3bd41afc93c426c5e7b2,
         type: 3}
       propertyPath: wallCheckDistance
@@ -1174,6 +1180,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3883940934016638641, guid: 60f2a6b23788cb8478d7370150d01cc8,
+        type: 3}
+      propertyPath: launchForce
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 3883940934381866138, guid: 60f2a6b23788cb8478d7370150d01cc8,
+        type: 3}
+      propertyPath: launchForce
+      value: 13.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 60f2a6b23788cb8478d7370150d01cc8, type: 3}

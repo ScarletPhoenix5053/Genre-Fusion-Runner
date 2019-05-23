@@ -36,6 +36,7 @@ public class CameraController : MonoBehaviour
     private void Awake()
     {
         offsetOnAwake = offset;
+        dipTarget = offsetOnAwake.y;
     }
     private void Update()
     {
@@ -149,7 +150,7 @@ public class CameraController : MonoBehaviour
     #region Camera Dip
     [SerializeField] private float cameraDip = 1f;
     [SerializeField] private float cameraDipTime = 0.2f;
-    private float dipTarget = 0f;
+    private float dipTarget = 1f;
     private float dipSmoothVel = 0f;
     private Vector3 offsetOnAwake;
 

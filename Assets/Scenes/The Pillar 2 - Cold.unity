@@ -1101,6 +1101,12 @@ PrefabInstance:
       propertyPath: Cam
       value: 
       objectReference: {fileID: 1356320224}
+    - target: {fileID: 3948942229280379537, guid: f532107f700a3bd41afc93c426c5e7b2,
+        type: 3}
+      propertyPath: motion
+      value: 
+      objectReference: {fileID: 11400000, guid: 05d56f1f5ab5d584cad86306d4a5d8e5,
+        type: 2}
     - target: {fileID: 3948942229280379528, guid: f532107f700a3bd41afc93c426c5e7b2,
         type: 3}
       propertyPath: wallCheckDistance

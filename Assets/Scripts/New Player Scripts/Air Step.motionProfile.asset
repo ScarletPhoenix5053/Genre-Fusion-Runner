@@ -10,23 +10,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b1645477f12ca2048864530639505784, type: 3}
-  m_Name: Butterfly.motionProfile
+  m_Name: Air Step.motionProfile
   m_EditorClassIdentifier: 
   InstantWalkAcceleration: 0.9
-  WalkSpeed: 3.5
+  WalkSpeed: 5
   SprintExtraSpeed: 4
   GroundedFriction: 50
-  AirFriction: 5
-  WallrunFriction: 45
+  AirFriction: 8
+  WallrunFriction: 35
   SlideFriction: 15
-  GroundedJumpStrength: 6
-  GroundedJumpBoost: 2
-  WallJumpStrength: 4.5
-  WallJumpBoost: 4
+  GroundedJumpStrength: 11
+  GroundedJumpBoost: 5
+  WallJumpStrength: 6
+  WallJumpBoost: 6
   ClimbJumpForce: 4
-  AirJumps: 0
-  Gravity: 10
-  AirStrafeForce: 3
+  AirJumps: 1
+  Gravity: 18
+  AirStrafeForce: 4
   WallrunSpeed: 11
   WallrunMinStartSpeed: 9
   WallrunMinStaySpeed: 6
