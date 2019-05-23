@@ -41,7 +41,7 @@ public class KBMInputGroup : IPlayerInput
         // Apply cursor lock
         if (prefs.LockCursor)
         {
-            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.lockState = CursorLockMode.Confined;
             Cursor.visible = false;
         }
     }

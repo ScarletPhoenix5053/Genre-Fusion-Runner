@@ -10,6 +10,11 @@ public class KanaPickup : MonoBehaviour
     private Kana kana;
     private Text display;
     private GameObject particles;
+    [Header("Effects")]
+    [SerializeField] private new GameObject light;
+    [SerializeField] private new AudioSource audio;
+    [SerializeField] private float pitchVariance = .2f;
+    private float pitchOnAwake;
     [Header("Player Detection")]
 #pragma warning disable
     [SerializeField] private LayerMask playerMask;
@@ -28,6 +33,7 @@ public class KanaPickup : MonoBehaviour
     {
         display = GetComponentInChildren<Text>();
         particles = GetComponentInChildren<ParticleSystem>().gameObject;
+        pitchOnAwake = audio.pitch;
 
         if (kana == null)
         {
@@ -56,11 +62,15 @@ public class KanaPickup : MonoBehaviour
         Active = active;
         display.enabled = active;
         particles.SetActive(active);
+        light.SetActive(active);
     }
     public void Activate()
     {
         if (kana != null)
-        HaikuCollectionSystem.Instance.CollectKana(kana);
+            HaikuCollectionSystem.Instance.CollectKana(kana);
+
+        audio.pitch = Random.Range(pitchOnAwake - pitchVariance, pitchOnAwake + pitchVariance);
+        audio.Play();
         SetActive(false);
     }
 }

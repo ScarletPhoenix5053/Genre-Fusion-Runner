@@ -12,12 +12,16 @@ public class SessionManager : MonoBehaviour
         else if (Instance != this)
         {
             Destroy(fader.gameObject);
+            Destroy(pauseCanvas.gameObject);
             Destroy(gameObject);
         }
     }
 
     [Header("Databases")]
     [SerializeField] private HaikuDatabase HaikuDatabase;
+
+    [Header("UI")]
+    [SerializeField] private Canvas pauseCanvas;
 
     [SerializeField] private float stageChangeDelay = 2f;
     [SerializeField] private float fadeToWhiteTime = 0.2f;
@@ -46,6 +50,7 @@ public class SessionManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
         DontDestroyOnLoad(fader.gameObject);
         DontDestroyOnLoad(fader.transform.parent.gameObject);
+        DontDestroyOnLoad(pauseCanvas.gameObject);
 
         // Init
         fader.Transparency = 0f;
@@ -61,6 +66,28 @@ public class SessionManager : MonoBehaviour
     private void OnValidate()
     {
         if (stageChangeDelay < 0) stageChangeDelay = 0;
+    }
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            // Open/close pause menu
+            if (pauseCanvas.enabled) ClosePauseMenu();
+            else OpenPauseMenu();
+        }
+    }
+
+    public void OpenPauseMenu()
+    {
+        pauseCanvas.enabled = true;
+        Time.timeScale = 0;
+        Cursor.visible = true;
+    }
+    public void ClosePauseMenu()
+    {
+        pauseCanvas.enabled = false;
+        Time.timeScale = 1;
+        Cursor.visible = false;
     }
 
     public void BeginStageChange()
@@ -81,6 +108,21 @@ public class SessionManager : MonoBehaviour
 
         Debug.Log("Next haiku is " + ActiveHaiku.Name);
     }
+    public void BeginStageChange(Haiku haiku)
+    {
+        if (stageChangeCountdownRoutine != null) return;
+
+        stageChangeCountdownRoutine = StageCountdownRoutine();
+        StartCoroutine(stageChangeCountdownRoutine);
+        Invoke("FadeToWhite", stageChangeDelay - fadeToWhiteTime);
+
+        // Update Haiku
+        PrevHaiku = ActiveHaiku;
+        ActiveHaiku = haiku;
+
+        Debug.Log("Next haiku is " + ActiveHaiku.Name);
+    }
+
     public void LoadNewScene()
     {
         // Store player pos

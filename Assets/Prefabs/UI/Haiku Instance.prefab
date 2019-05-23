@@ -232,6 +232,7 @@ GameObject:
   - component: {fileID: 6050400326681648606}
   - component: {fileID: 8346419319771366313}
   - component: {fileID: 8798753516248421102}
+  - component: {fileID: 1662514789448115510}
   m_Layer: 5
   m_Name: Haiku Instance
   m_TagString: Untagged
@@ -337,9 +338,39 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 8346419319771366313}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1662514789448115510}
+        m_MethodName: LoadMyHaikuLevel
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
+--- !u!114 &1662514789448115510
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4272356214311113040}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23f06be2b5ae8ba4cb612d2e761e3bcd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  haikuName: {fileID: 0}
+  kanaLines:
+  - {fileID: 4272356213319291132}
+  - {fileID: 1542816140534970886}
+  - {fileID: 1542816141598595724}
+  roumaji: {fileID: 66712043}
+  english: {fileID: 1634049708}
 --- !u!1001 &1542816142443306664
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -347,11 +378,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4272356214020215409}
     m_Modifications:
-    - target: {fileID: 3324600234218491478, guid: 1fdac532346983942822c70ded327d7e,
-        type: 3}
-      propertyPath: m_Name
-      value: Haiku Line 1
-      objectReference: {fileID: 0}
     - target: {fileID: 3324600234218491477, guid: 1fdac532346983942822c70ded327d7e,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -457,6 +483,11 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 3324600234218491478, guid: 1fdac532346983942822c70ded327d7e,
+        type: 3}
+      propertyPath: m_Name
+      value: Haiku Line 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3324600234218491476, guid: 1fdac532346983942822c70ded327d7e,
         type: 3}
       propertyPath: m_Text
@@ -470,6 +501,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 1542816142443306664}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &4272356213319291132 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3324600234218491476, guid: 1fdac532346983942822c70ded327d7e,
+    type: 3}
+  m_PrefabInstance: {fileID: 1542816142443306664}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 708705254, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &4272356213666026712
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -477,11 +520,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4272356214020215409}
     m_Modifications:
-    - target: {fileID: 3324600234218491478, guid: 1fdac532346983942822c70ded327d7e,
-        type: 3}
-      propertyPath: m_Name
-      value: Haiku Line 3
-      objectReference: {fileID: 0}
     - target: {fileID: 3324600234218491477, guid: 1fdac532346983942822c70ded327d7e,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -587,6 +625,11 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 3324600234218491478, guid: 1fdac532346983942822c70ded327d7e,
+        type: 3}
+      propertyPath: m_Name
+      value: Haiku Line 3
+      objectReference: {fileID: 0}
     - target: {fileID: 3324600234218491476, guid: 1fdac532346983942822c70ded327d7e,
         type: 3}
       propertyPath: m_Text
@@ -600,6 +643,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 4272356213666026712}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1542816141598595724 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3324600234218491476, guid: 1fdac532346983942822c70ded327d7e,
+    type: 3}
+  m_PrefabInstance: {fileID: 4272356213666026712}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 708705254, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &4272356214758011986
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -607,11 +662,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4272356214020215409}
     m_Modifications:
-    - target: {fileID: 3324600234218491478, guid: 1fdac532346983942822c70ded327d7e,
-        type: 3}
-      propertyPath: m_Name
-      value: Haiku Line 2
-      objectReference: {fileID: 0}
     - target: {fileID: 3324600234218491477, guid: 1fdac532346983942822c70ded327d7e,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -717,6 +767,11 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 3324600234218491478, guid: 1fdac532346983942822c70ded327d7e,
+        type: 3}
+      propertyPath: m_Name
+      value: Haiku Line 2
+      objectReference: {fileID: 0}
     - target: {fileID: 3324600234218491476, guid: 1fdac532346983942822c70ded327d7e,
         type: 3}
       propertyPath: m_Text
@@ -730,3 +785,15 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 4272356214758011986}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1542816140534970886 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3324600234218491476, guid: 1fdac532346983942822c70ded327d7e,
+    type: 3}
+  m_PrefabInstance: {fileID: 4272356214758011986}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 708705254, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
