@@ -4831,7 +4831,7 @@ MonoBehaviour:
   playerMask:
     serializedVersion: 2
     m_Bits: 512
-  checkRadius: 3
+  checkRadius: 4
   checkOffset: {x: 0, y: 2, z: 0}
 --- !u!82 &7482026940697505927
 AudioSource:
@@ -5127,6 +5127,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7002988144853338943}
     m_Modifications:
+    - target: {fileID: 7147158508441168992, guid: 8b6f20984288c46439153f38e9411065,
+        type: 3}
+      propertyPath: m_Name
+      value: Sparkle
+      objectReference: {fileID: 0}
+    - target: {fileID: 7147158508441168992, guid: 8b6f20984288c46439153f38e9411065,
+        type: 3}
+      propertyPath: m_Layer
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 7147158508441168993, guid: 8b6f20984288c46439153f38e9411065,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -5181,16 +5191,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7147158508441168992, guid: 8b6f20984288c46439153f38e9411065,
-        type: 3}
-      propertyPath: m_Name
-      value: Sparkle
-      objectReference: {fileID: 0}
-    - target: {fileID: 7147158508441168992, guid: 8b6f20984288c46439153f38e9411065,
-        type: 3}
-      propertyPath: m_Layer
-      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7147158508441168995, guid: 8b6f20984288c46439153f38e9411065,
         type: 3}

@@ -7,6 +7,8 @@ using UnityEngine.UI;
 public class MajorDisplay : MonoBehaviour
 {
     [SerializeField] private Text kana;
+    [SerializeField] private Text banner;
+    [SerializeField] private Text bannerSmall;
     private Animator anim;
 
     private void Awake()

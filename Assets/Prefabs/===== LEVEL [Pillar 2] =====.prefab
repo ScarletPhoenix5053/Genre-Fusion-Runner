@@ -866,6 +866,8 @@ Transform:
   - {fileID: 4536510047972212475}
   - {fileID: 4536510047613562088}
   - {fileID: 4536510047890687946}
+  - {fileID: 4536510047651651094}
+  - {fileID: 4536510047675983932}
   m_Father: {fileID: 6907245600665790870}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 21.863, z: 0}
@@ -1897,8 +1899,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6907245601637188912}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 500, y: 1, z: 500}
+  m_LocalPosition: {x: 0, y: -1.22, z: 0}
+  m_LocalScale: {x: 1425.15, y: 2.8503, z: 1425.15}
   m_Children: []
   m_Father: {fileID: 6907245600665790870}
   m_RootOrder: 5
@@ -3251,6 +3253,81 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 6907245600593199550}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &6907245600631493929
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 6907245600976335947}
+    m_Modifications:
+    - target: {fileID: 7002988144853338940, guid: 05a7ab750eee27444a3cc2bf8eec918e,
+        type: 3}
+      propertyPath: m_Name
+      value: Kana Pickup (15)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7002988144853338943, guid: 05a7ab750eee27444a3cc2bf8eec918e,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: 7002988144853338943, guid: 05a7ab750eee27444a3cc2bf8eec918e,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 42
+      objectReference: {fileID: 0}
+    - target: {fileID: 7002988144853338943, guid: 05a7ab750eee27444a3cc2bf8eec918e,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 5
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 05a7ab750eee27444a3cc2bf8eec918e, type: 3}
+--- !u!4 &4536510047651651094 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7002988144853338943, guid: 05a7ab750eee27444a3cc2bf8eec918e,
+    type: 3}
+  m_PrefabInstance: {fileID: 6907245600631493929}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &6907245600664118019
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 6907245600976335947}
+    m_Modifications:
+    - target: {fileID: 7002988144853338940, guid: 05a7ab750eee27444a3cc2bf8eec918e,
+        type: 3}
+      propertyPath: m_Name
+      value: Kana Pickup (16)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7002988144853338943, guid: 05a7ab750eee27444a3cc2bf8eec918e,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 7002988144853338943, guid: 05a7ab750eee27444a3cc2bf8eec918e,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -15
+      objectReference: {fileID: 0}
+    - target: {fileID: 7002988144853338943, guid: 05a7ab750eee27444a3cc2bf8eec918e,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 21.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 7002988144853338943, guid: 05a7ab750eee27444a3cc2bf8eec918e,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 05a7ab750eee27444a3cc2bf8eec918e, type: 3}
+--- !u!4 &4536510047675983932 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7002988144853338943, guid: 05a7ab750eee27444a3cc2bf8eec918e,
+    type: 3}
+  m_PrefabInstance: {fileID: 6907245600664118019}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &6907245600727525335
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4021,17 +4098,17 @@ PrefabInstance:
     - target: {fileID: 7002988144853338943, guid: 05a7ab750eee27444a3cc2bf8eec918e,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 10
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 7002988144853338943, guid: 05a7ab750eee27444a3cc2bf8eec918e,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -7
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 7002988144853338943, guid: 05a7ab750eee27444a3cc2bf8eec918e,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -48
+      value: -17
       objectReference: {fileID: 0}
     - target: {fileID: 7002988144853338943, guid: 05a7ab750eee27444a3cc2bf8eec918e,
         type: 3}

@@ -91,6 +91,7 @@ public class HaikuDatabase : ScriptableObject
     public string DefaultSceneName;
     public List<string> HaikuSceneNames;
 
+    public string HaikuDataText { get; set; }
     public List<Haiku> Haiku { get; set; }
 
     private const int haikuNameIndex = 0;
@@ -111,35 +112,36 @@ public class HaikuDatabase : ScriptableObject
 
         // Split file into entries
         var csvEntries = new List<string[]>();
+        /*
         using (StreamReader reader = new StreamReader(haikuDataPath))
+        {*/
+        var lines = new List<string>();
+        var currentLine = "";
+        var currentLineN = 0;
+        var haikuCsvData = HaikuDataText.Split('\n');
+
+        for (int i = 0; i < haikuCsvData.Length; i++)
         {
-            var lines = new List<string>();
-            var currentLine = "";
-            var currentLineN = 0;
-
-            do
+            currentLine = haikuCsvData[i];
+            if (currentLine != null)
             {
-                currentLine = reader.ReadLine();
-                if (currentLine != null)
-                {
-                    currentLineN++;
-                    lines.Add(currentLine);
-                }
-            }
-            while (currentLine != null);
-
-            Debug.Assert(lines.Count % 5 == 0);
-
-            for (int i = 0; i < lines.Count; i+=5)
-            {
-                var csvEntry = new string[4];
-                for (int line = 0; line < 4; line++)
-                {
-                    csvEntry[line] = lines[i + line];
-                }
-                csvEntries.Add(csvEntry);
+                currentLineN++;
+                lines.Add(currentLine);
             }
         }
+
+        Debug.Assert(lines.Count % 5 == 0);
+
+        for (int i = 0; i < lines.Count; i+=5)
+        {
+            var csvEntry = new string[4];
+            for (int line = 0; line < 4; line++)
+            {
+                csvEntry[line] = lines[i + line];
+            }
+            csvEntries.Add(csvEntry);
+        }
+        //}
 
         // For each entry:
         for (int entryIndex = 0; entryIndex < csvEntries.Count; entryIndex++)
@@ -150,7 +152,7 @@ public class HaikuDatabase : ScriptableObject
             var kanaCharsEntry = entry[haikuKanaIndex].Split(',');
             for (int i = 0; i < 3; i++)
             {
-                kanaChars[i] = kanaCharsEntry[i].ToCharArray();
+                kanaChars[i] = kanaCharsEntry[i].Replace("\r", string.Empty).ToCharArray();
             }
 
             // Convert to kana data structs

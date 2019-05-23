@@ -32,6 +32,8 @@ public class KanaDatabase : ScriptableObject
     [Tooltip("Directory of data file")]
     private string kanaDataPath;
 
+    public string KanaDataText { get; set; }
+
     [SerializeField] private Dictionary<char, Kana> kanaDictionary;
 
     public void GenerateDatabase()
@@ -46,38 +48,37 @@ public class KanaDatabase : ScriptableObject
         //File.SetAttributes(Reques, FileAttributes.Normal);
 
         // Loop thru each line and write kana data
+        /*
         using (StreamReader reader = new StreamReader(kanaDataPath))
+    {*/
+        var currentLine = "";
+        var kanaData = new List<Kana>();
+
+        var kanaCsvStrings = KanaDataText.Split('\n');
+
+        for (int i = 0; i < kanaCsvStrings.Length; i++)
         {
-            var currentLine = "";
-            var kanaData = new List<Kana>();
-
-            do
+            currentLine = kanaCsvStrings[i];
+            if (currentLine != null)
             {
-                currentLine = reader.ReadLine();
-                if (currentLine != null)
-                {
-                    var kanaLine = currentLine.Split(',');
-                    Debug.Assert(kanaLine.Length == 3);
+                var kanaLine = currentLine.Split(',');
+                Debug.Assert(kanaLine.Length == 3);
 
-                    var newKana = new Kana(
-                        kanaLine[0].ToCharArray()[0],
-                        kanaLine[1],
-                        kanaLine[2]
-                        );
+                var newKana = new Kana(
+                    kanaLine[0].ToCharArray()[0],
+                    kanaLine[1],
+                    kanaLine[2]
+                    );
 
-                    kanaData.Add(newKana);
-                }
+                kanaData.Add(newKana);
             }
-            while (currentLine != null);
+        }
 
-            // Store in database
-            kanaDictionary = new Dictionary<char, Kana>();
-            foreach (Kana kana in kanaData)
-            {
-                kanaDictionary.Add(kana.Character, kana);
-            }
-
-            // Log all to console
+        // Store in database
+        kanaDictionary = new Dictionary<char, Kana>();
+        foreach (Kana kana in kanaData)
+        {
+            kanaDictionary.Add(kana.Character, kana);
         }
     }
 

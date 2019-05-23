@@ -11,6 +11,9 @@ public class HaikuDatabaseEditor : Editor
         base.OnInspectorGUI();
         var haikuDatabase = target as HaikuDatabase;
 
+        // Text feild
+        haikuDatabase.HaikuDataText = EditorGUILayout.TextArea(haikuDatabase.HaikuDataText, GUILayout.Height(500f));
+
         // Generate database button
         if (GUILayout.Button("Generate Haiku"))
         {

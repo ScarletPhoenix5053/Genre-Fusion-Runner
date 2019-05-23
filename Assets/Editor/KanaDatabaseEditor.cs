@@ -11,6 +11,9 @@ public class KanaDatabaseEditor : Editor
         base.OnInspectorGUI();
         var kanaDatabase = target as KanaDatabase;
 
+        // Text feild
+        kanaDatabase.KanaDataText = EditorGUILayout.TextArea(kanaDatabase.KanaDataText, GUILayout.Height(500f));
+        
         // Generate database button
         if (GUILayout.Button("Generate Database"))
         {
