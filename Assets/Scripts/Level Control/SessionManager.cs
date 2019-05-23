@@ -43,8 +43,6 @@ public class SessionManager : MonoBehaviour
     {
         ValidateSingleton();
         if (Instance != this) return;
-        Debug.Log("Running awake");
-        
 
         // Don't destroy on load
         DontDestroyOnLoad(gameObject);
@@ -54,10 +52,13 @@ public class SessionManager : MonoBehaviour
 
         // Init
         fader.Transparency = 0f;
+        HaikuDatabase.GenerateHaiku();
         PrevHaiku = HaikuDatabase.Haiku[0];
         ActiveHaiku = HaikuDatabase.Haiku[0];
         GetPlayerTransform();
-
+    }
+    private void Start()
+    {
         // Events
         OnStageChange += LoadNewScene;
         SceneManager.sceneLoaded -= AlignPlayerPosInNewScene;

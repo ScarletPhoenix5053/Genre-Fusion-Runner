@@ -87,7 +87,7 @@ public class ParkourPlayerController2 : MonoBehaviour
         //HaikuCollectionSystem.OnCompletion += UpdateMotionProfile;
 
         // Initialize debugging stuff
-        CreateDebugOverlayLogs();
+        //CreateDebugOverlayLogs();
     }
     private void Update()
     {
@@ -340,7 +340,7 @@ public class ParkourPlayerController2 : MonoBehaviour
             default: throw new System.NotImplementedException("Please impliment interactions for state: " + State.ToString());
         }
 
-        UpdateDebugOverlayLogs();
+        //UpdateDebugOverlayLogs();
     }
     private void FixedUpdate()
     {
@@ -348,7 +348,6 @@ public class ParkourPlayerController2 : MonoBehaviour
         if (Grounded || State == CharacterState.Wallrun) airJumpsRemaining = motion.AirJumps;
         if (!groundedLastFrame && Grounded)
         {
-            Debug.Log("Landing");
             refs.PlayerAudio.PlayLandingAudio();
         }
         groundedLastFrame = Grounded;

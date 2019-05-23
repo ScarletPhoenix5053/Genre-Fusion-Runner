@@ -14,6 +14,5 @@ public class PlayerRefs2 : MonoBehaviour
     public CapsuleCollider MainCollider;
     public TrueDrag Drag;
     [Header("Prefrences")]
-    public PlayerPreferenceGroup PlayerPrefrences;
-    
+    public PlayerPreferenceGroup PlayerPrefrences;    
 }

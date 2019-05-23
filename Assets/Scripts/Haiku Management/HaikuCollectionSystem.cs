@@ -26,12 +26,12 @@ public class HaikuCollectionSystem : MonoBehaviour
     {
         ValidateSingleton();
 
-        DebugOverlay.CreateLog(idActiveHaiku);
+        //DebugOverlay.CreateLog(idActiveHaiku);
     }
     private void Start()
     {
         haiku = SessionManager.Instance.ActiveHaiku;
-        DebugOverlay.UpdateLog(idActiveHaiku, haiku.Name);
+        //DebugOverlay.UpdateLog(idActiveHaiku, haiku.Name);
 
         // Init Display
         haikuDisplay.InitDisplay(haiku);

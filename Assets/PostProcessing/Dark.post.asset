@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8a3bdb2cd68f901469e7cc149151eb49, type: 3}
-  m_Name: Preset 1
+  m_Name: Dark.post
   m_EditorClassIdentifier: 
   debugViews:
     m_Enabled: 1
@@ -26,7 +26,7 @@ MonoBehaviour:
         motionVectorsResolution: 24
         motionVectorsAmplitude: 64
   fog:
-    m_Enabled: 1
+    m_Enabled: 0
     m_Settings:
       excludeSkybox: 0
   antialiasing:
@@ -41,7 +41,7 @@ MonoBehaviour:
         stationaryBlending: 0.95
         motionBlending: 0.85
   ambientOcclusion:
-    m_Enabled: 1
+    m_Enabled: 0
     m_Settings:
       intensity: 1
       radius: 0.3
@@ -55,12 +55,12 @@ MonoBehaviour:
     m_Settings:
       reflection:
         blendType: 0
-        reflectionQuality: 0
+        reflectionQuality: 2
         maxDistance: 100
         iterationCount: 256
-        stepSize: 3
+        stepSize: 2
         widthModifier: 0.5
-        reflectionBlur: 1
+        reflectionBlur: 1.7
         reflectBackfaces: 0
       intensity:
         reflectionMultiplier: 1
@@ -121,12 +121,12 @@ MonoBehaviour:
         neutralWhiteLevel: 5.3
         neutralWhiteClip: 10
       basic:
-        postExposure: 0
-        temperature: 0
-        tint: 0
+        postExposure: -0.29
+        temperature: -8
+        tint: 7.1
         hueShift: 0
-        saturation: 0.78
-        contrast: 1.03
+        saturation: 0.736
+        contrast: 0.745
       channelMixer:
         red: {x: 1, y: 0, z: 0}
         green: {x: 0, y: 1, z: 0}
@@ -135,9 +135,9 @@ MonoBehaviour:
       colorWheels:
         mode: 1
         log:
-          slope: {r: 0.77295506, g: 0.858839, b: 1, a: 0}
-          power: {r: 0.9900914, g: 1, b: 0.8269294, a: 0}
-          offset: {r: 1, g: 0.89644384, b: 0.9683003, a: 0}
+          slope: {r: 0.68641335, g: 0.6986821, b: 1, a: 0}
+          power: {r: 0.8746242, g: 1, b: 0.6985861, a: 0}
+          offset: {r: 1, g: 0.91302663, b: 0.94776154, a: 0}
         linear:
           lift: {r: 1, g: 1, b: 1, a: 0}
           gamma: {r: 1, g: 1, b: 1, a: 0}
@@ -151,7 +151,7 @@ MonoBehaviour:
               time: 0
               value: 0
               inSlope: 0
-              outSlope: 1.0100311
+              outSlope: 0.71483934
               tangentMode: 0
               weightedMode: 0
               inWeight: 0
@@ -159,7 +159,7 @@ MonoBehaviour:
             - serializedVersion: 3
               time: 1
               value: 1
-              inSlope: 0.6416666
+              inSlope: 1.2447586
               outSlope: 0
               tangentMode: 0
               weightedMode: 0
@@ -241,6 +241,15 @@ MonoBehaviour:
               inWeight: 0
               outWeight: 0
             - serializedVersion: 3
+              time: 0.20982143
+              value: 0.24283993
+              inSlope: 0.56330633
+              outSlope: 0.56330633
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            - serializedVersion: 3
               time: 1
               value: 1
               inSlope: 1
@@ -296,10 +305,10 @@ MonoBehaviour:
           m_ZeroValue: 0.5
           m_Range: 1
         e_CurrentEditingCurve: 0
-        e_CurveY: 0
+        e_CurveY: 1
         e_CurveR: 0
-        e_CurveG: 1
-        e_CurveB: 1
+        e_CurveG: 0
+        e_CurveB: 0
   userLut:
     m_Enabled: 0
     m_Settings:
@@ -318,13 +327,13 @@ MonoBehaviour:
       size: 0.54
       luminanceContribution: 0.928
   vignette:
-    m_Enabled: 0
+    m_Enabled: 1
     m_Settings:
       mode: 0
-      color: {r: 1, g: 0.9764151, b: 0.998646, a: 1}
+      color: {r: 0.41509432, g: 0.41509432, b: 0.41509432, a: 1}
       center: {x: 0.5, y: 0.5}
-      intensity: 0.45
-      smoothness: 0.2
+      intensity: 0.275
+      smoothness: 0.362
       roundness: 1
       mask: {fileID: 0}
       opacity: 1
