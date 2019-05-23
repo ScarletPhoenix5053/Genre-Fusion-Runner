@@ -52,7 +52,6 @@ public class CameraController : MonoBehaviour
         pitch = Mathf.Clamp(pitch, pitchMinMax.x, pitchMinMax.y);
 
         // Apply rotation
-        Debug.Log("Cam: " + currentRotation);
         currentRotation = Vector3.SmoothDamp(currentRotation, new Vector3(pitch, yaw, currentRotation.z), ref rotationSmoothVel, rotationSmoothTime);
         transform.eulerAngles = currentRotation;
 

@@ -93,6 +93,8 @@ public class SessionManager : MonoBehaviour
         Debug.Assert(ActiveHaiku != null);
         Debug.Assert(ActiveHaiku.Scene != null);
         SceneManager.LoadScene(ActiveHaiku.Scene);
+
+        
     }
     private void AlignPlayerPosInNewScene(Scene activeScene, LoadSceneMode loadSceneMode) => AlignPlayerPosInNewScene();
     public void AlignPlayerPosInNewScene()

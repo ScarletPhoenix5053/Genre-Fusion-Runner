@@ -5,6 +5,8 @@ public class PlayerRefs2 : MonoBehaviour
 {
     [Header("Camera")]
     public CameraController Cam;
+    [Header("Audio")]
+    public PlayerAudio PlayerAudio;
     [Header("Motion Controllers")]
     public CoalescingForce CoalescingForce;
     [Header("Physics and Motion")]

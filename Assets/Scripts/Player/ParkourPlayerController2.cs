@@ -19,7 +19,8 @@ public class ParkourPlayerController2 : MonoBehaviour
 
     #region Motion
     public float Speed => refs.CoalescingForce.Speed;
-    protected bool Grounded => refs.GroundChecker.Grounded;
+    public bool Grounded => refs.GroundChecker.Grounded;
+    private bool groundedLastFrame = false;
 
     private int airJumpsRemaining = 0;
     #endregion
@@ -49,13 +50,14 @@ public class ParkourPlayerController2 : MonoBehaviour
 
     #region Slide
 #pragma warning disable IDE0044
-
     private IEnumerator slideBoostRoutine;
 #pragma warning restore IDE0044
     #endregion
 
     #region State
-    private CharacterState state = CharacterState.Normal;
+    
+    public CharacterState State { get; private set; }
+
     #endregion
 
     #endregion
@@ -95,7 +97,7 @@ public class ParkourPlayerController2 : MonoBehaviour
         var jump = inputGroup.GetInputJump();
         var crouch = inputGroup.GetInputCrouch();
 
-        switch (state)
+        switch (State)
         {
             case CharacterState.Normal:
                 #region Normal Motion
@@ -191,7 +193,7 @@ public class ParkourPlayerController2 : MonoBehaviour
                     if (Grounded) lastWall = null;
                     if (
                         wallInFront && inputGroup.GetAxisMotion().y > 0
-                        && state != CharacterState.Climbing
+                        && State != CharacterState.Climbing
                         && hit.collider != lastWall
                         )
                     {
@@ -335,7 +337,7 @@ public class ParkourPlayerController2 : MonoBehaviour
                 break;
 
             // Throw error for unrecognized state
-            default: throw new System.NotImplementedException("Please impliment interactions for state: " + state.ToString());
+            default: throw new System.NotImplementedException("Please impliment interactions for state: " + State.ToString());
         }
 
         UpdateDebugOverlayLogs();
@@ -343,12 +345,18 @@ public class ParkourPlayerController2 : MonoBehaviour
     private void FixedUpdate()
     {
         // Reset jumps on grounding
-        if (Grounded || state == CharacterState.Wallrun) airJumpsRemaining = motion.AirJumps;
+        if (Grounded || State == CharacterState.Wallrun) airJumpsRemaining = motion.AirJumps;
+        if (!groundedLastFrame && Grounded)
+        {
+            Debug.Log("Landing");
+            refs.PlayerAudio.PlayLandingAudio();
+        }
+        groundedLastFrame = Grounded;
 
-        if (state == CharacterState.Normal)
+        if (State == CharacterState.Normal)
         {
             // If grounded, use ground friction
-            if (Grounded && state == CharacterState.Normal)
+            if (Grounded && State == CharacterState.Normal)
             {
                 refs.Drag.DragConstant = motion.GroundedFriction;
             }
@@ -360,7 +368,7 @@ public class ParkourPlayerController2 : MonoBehaviour
         // Try grav
         {
             var cf = refs.CoalescingForce;
-            if (Grounded || state != CharacterState.Normal) return;
+            if (Grounded || State != CharacterState.Normal) return;
 
             var gravForce = ToForce.OverFixedTime(Vector3.down * motion.Gravity);
             cf.AddForce(gravForce);
@@ -410,7 +418,7 @@ public class ParkourPlayerController2 : MonoBehaviour
     #region State
     private void SetState(CharacterState newState)
     {
-        if (newState == state) return;
+        if (newState == State) return;
 
         // Cancel slide speed boost on change
         if (newState != CharacterState.Slide) refs.CoalescingForce.CancelForceOverTime(slideBoostRoutine);
@@ -418,13 +426,16 @@ public class ParkourPlayerController2 : MonoBehaviour
         // Reset climb time on change
         if (newState != CharacterState.Climbing) climbTime = 0;
 
-        state = newState;
+        State = newState;
     }
 
     private void SetStateToNormal()
     {
         SetState(CharacterState.Normal);
         refs.Drag.DragConstant = motion.GroundedFriction;
+
+        // Trigger Footstep
+        refs.PlayerAudio.PlayFootstepAudio();
 
         CamControlsRotation(true);
         refs.Cam.DipCamera(false);
@@ -440,6 +451,9 @@ public class ParkourPlayerController2 : MonoBehaviour
         // Cancel vertical momentum
         refs.CoalescingForce.ResetVelocityY();
 
+        // Trigger Footstep
+        refs.PlayerAudio.PlayFootstepAudio();
+
         CamControlsRotation(false);
         refs.Cam.DipCamera(false);
     }
@@ -450,6 +464,8 @@ public class ParkourPlayerController2 : MonoBehaviour
         // speed boost
         var startForce = -(ToForce.OverFixedTime(transform.forward * this.motion.SlideStartForce));
         slideBoostRoutine = refs.CoalescingForce.AddForceOverTime(-startForce, this.motion.SlideStartTime);
+
+        // trigger audio
 
         CamControlsRotation(false);
         refs.Cam.DipCamera(true);
@@ -588,7 +604,7 @@ public class ParkourPlayerController2 : MonoBehaviour
     }
     private void UpdateDebugOverlayLogs()
     {
-        DebugOverlay.UpdateLog(idCharState, state.ToString());
+        DebugOverlay.UpdateLog(idCharState, State.ToString());
         DebugOverlay.UpdateLog(idCharSpeed, Speed.ToString());
         DebugOverlay.UpdateLog(idCharFwdSpeed, refs.CoalescingForce.ForwardVel.ToString());
     }

@@ -30,7 +30,7 @@ public class HaikuCollectionSystem : MonoBehaviour
     }
     private void Start()
     {
-        haiku = haikuDatabase.GetStartHaiku();
+        haiku = SessionManager.Instance.ActiveHaiku;
         DebugOverlay.UpdateLog(idActiveHaiku, haiku.Name);
 
         // Init Display
