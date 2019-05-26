@@ -120,11 +120,11 @@ public class ParkourPlayerController2 : MonoBehaviour
                     Vector3 motionForce;
                     if (Grounded)
                     {
-                        motionForce = ToForce.OverFixedTime(motion * walkSpeed);
+                        motionForce = ToForce.OverDeltaTime(motion * walkSpeed);
                     }
                     else
                     {
-                        motionForce = ToForce.OverFixedTime(motion * airStrafeForce);
+                        motionForce = ToForce.OverDeltaTime(motion * airStrafeForce);
                     }
                     
                     // Instant accel/decel
@@ -145,7 +145,7 @@ public class ParkourPlayerController2 : MonoBehaviour
                     // Sprint boost
                     if (Grounded && sprint)
                     {
-                        motionForce += ToForce.OverFixedTime(Vector3.forward * sprintBoost);
+                        motionForce += ToForce.OverDeltaTime(Vector3.forward * sprintBoost);
                     }
 
                     // Limit force?? 
@@ -223,7 +223,7 @@ public class ParkourPlayerController2 : MonoBehaviour
                     //motionControllers.ActiveMotionController.MoveHorizontal(motionAxis);
 
                     // Create force
-                    var motionForce = ToForce.OverFixedTime(motion * wallrunSpeed);
+                    var motionForce = ToForce.OverDeltaTime(motion * wallrunSpeed);
 
                     // Limit force??
                     motionForce = Vector3.ClampMagnitude(motionForce, wallrunSpeed * ToForce.forceMultiplicationFactor);
@@ -267,7 +267,7 @@ public class ParkourPlayerController2 : MonoBehaviour
 
                     // Create force
                     var motion = new Vector3(inputMotion.x, 0, 0);
-                    Vector3 motionForce = ToForce.OverFixedTime(motion * this.motion.SlideStrafeStrength);
+                    Vector3 motionForce = ToForce.OverDeltaTime(motion * this.motion.SlideStrafeStrength);
 
                     // Limit force??
                     motionForce = Vector3.ClampMagnitude(motionForce, this.motion.SlideStrafeMaxSpeed * ToForce.forceMultiplicationFactor);
@@ -316,7 +316,7 @@ public class ParkourPlayerController2 : MonoBehaviour
                     }
 
                     // Climb
-                    cf.AddForce(ToForce.OverFixedTime(Vector3.up * motion.ClimbSpeed * inputMotion.y));
+                    cf.AddForce(ToForce.OverDeltaTime(Vector3.up * motion.ClimbSpeed * inputMotion.y));
 
                 }
 

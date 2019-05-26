@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: HaikuDatabase.data
   m_EditorClassIdentifier: 
   kanaDatabase: {fileID: 11400000, guid: 6595984d9f7b1294ebc9c0502dad17a1, type: 2}
-  haikuDataPath: C:/Projects/Kinetic Translation/Kinetic Translation/Assets/Scripts/Haiku
-    Management/Resources/Haiku Data/HaikuDatabase.csv
+  haikuDataPath: C:\Projects\Kinetic Translation\Kinetic Translation\HaikuDatabase.csv
   DefaultSceneName: The Pillar 2
   HaikuSceneNames:
   - The Pillar 2

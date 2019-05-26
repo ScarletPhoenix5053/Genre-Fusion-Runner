@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using UnityEngine.SceneManagement;
+//using UnityEditor.SceneManagement;
 using System.IO;
 using System.Collections.Generic;
 
@@ -101,6 +101,8 @@ public class HaikuDatabase : ScriptableObject
 
     public void GenerateHaiku()
     {
+        haikuDataPath = Path.Combine(Path.GetFullPath("."), "HaikuDatabase.csv");
+
         // Validate haiku data path        
         if (!File.Exists(haikuDataPath))
         {
@@ -112,36 +114,36 @@ public class HaikuDatabase : ScriptableObject
 
         // Split file into entries
         var csvEntries = new List<string[]>();
-        /*
+        
         using (StreamReader reader = new StreamReader(haikuDataPath))
-        {*/
-        var lines = new List<string>();
-        var currentLine = "";
-        var currentLineN = 0;
-        var haikuCsvData = HaikuDataText.Split('\n');
-
-        for (int i = 0; i < haikuCsvData.Length; i++)
         {
-            currentLine = haikuCsvData[i];
-            if (currentLine != null)
+            var lines = new List<string>();
+            var currentLine = "";
+            var currentLineN = 0;
+            var haikuCsvData =  reader.ReadToEnd().Split('\n');
+
+            for (int i = 0; i < haikuCsvData.Length; i++)
             {
-                currentLineN++;
-                lines.Add(currentLine);
+                currentLine = haikuCsvData[i];
+                if (currentLine != null)
+                {
+                    currentLineN++;
+                    lines.Add(currentLine);
+                }
+            }
+
+            Debug.Assert(lines.Count % 5 == 0);
+
+            for (int i = 0; i < lines.Count; i += 5)
+            {
+                var csvEntry = new string[4];
+                for (int line = 0; line < 4; line++)
+                {
+                    csvEntry[line] = lines[i + line];
+                }
+                csvEntries.Add(csvEntry);
             }
         }
-
-        Debug.Assert(lines.Count % 5 == 0);
-
-        for (int i = 0; i < lines.Count; i+=5)
-        {
-            var csvEntry = new string[4];
-            for (int line = 0; line < 4; line++)
-            {
-                csvEntry[line] = lines[i + line];
-            }
-            csvEntries.Add(csvEntry);
-        }
-        //}
 
         // For each entry:
         for (int entryIndex = 0; entryIndex < csvEntries.Count; entryIndex++)

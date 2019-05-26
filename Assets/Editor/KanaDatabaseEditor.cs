@@ -10,14 +10,16 @@ public class KanaDatabaseEditor : Editor
     {
         base.OnInspectorGUI();
         var kanaDatabase = target as KanaDatabase;
+        EditorUtility.SetDirty(kanaDatabase);
 
         // Text feild
-        kanaDatabase.KanaDataText = EditorGUILayout.TextArea(kanaDatabase.KanaDataText, GUILayout.Height(500f));
+        kanaDatabase.KanaDataTextE = EditorGUILayout.TextArea(kanaDatabase.KanaDataTextE, GUILayout.Height(500f));
         
         // Generate database button
         if (GUILayout.Button("Generate Database"))
         {
             kanaDatabase.GenerateDatabase();
+            PlayerPrefs.SetString("kanaData", kanaDatabase.KanaDataTextE);
         }
 
         // Render all kana

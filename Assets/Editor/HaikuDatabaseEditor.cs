@@ -10,6 +10,7 @@ public class HaikuDatabaseEditor : Editor
     {
         base.OnInspectorGUI();
         var haikuDatabase = target as HaikuDatabase;
+        EditorUtility.SetDirty(haikuDatabase);
 
         // Text feild
         haikuDatabase.HaikuDataText = EditorGUILayout.TextArea(haikuDatabase.HaikuDataText, GUILayout.Height(500f));

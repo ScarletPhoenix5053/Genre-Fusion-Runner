@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using UnityEditor;
+//using UnityEditor.SceneManagement;
 using System.IO;
 using System.Collections.Generic;
 
@@ -32,12 +32,15 @@ public class KanaDatabase : ScriptableObject
     [Tooltip("Directory of data file")]
     private string kanaDataPath;
 
-    public string KanaDataText { get; set; }
+    public string KanaDataText;
+    public string KanaDataTextE { get; set; }
 
     [SerializeField] private Dictionary<char, Kana> kanaDictionary;
 
     public void GenerateDatabase()
     {
+        kanaDataPath = Path.Combine(Path.GetFullPath("."), "KanaDatabase.csv");
+
         // Make sure file exists
         if (!File.Exists(kanaDataPath))
         {
@@ -48,40 +51,40 @@ public class KanaDatabase : ScriptableObject
         //File.SetAttributes(Reques, FileAttributes.Normal);
 
         // Loop thru each line and write kana data
-        /*
+
         using (StreamReader reader = new StreamReader(kanaDataPath))
-    {*/
-        var currentLine = "";
-        var kanaData = new List<Kana>();
-
-        var kanaCsvStrings = KanaDataText.Split('\n');
-
-        for (int i = 0; i < kanaCsvStrings.Length; i++)
         {
-            currentLine = kanaCsvStrings[i];
-            if (currentLine != null)
+            var currentLine = "";
+            var kanaData = new List<Kana>();
+
+            var kanaCsvStrings = reader.ReadToEnd().Split('\n');
+            //var kanaCsvStrings = PlayerPrefs.GetString("kanaData").Split('\n');
+
+            for (int i = 0; i < kanaCsvStrings.Length; i++)
             {
-                var kanaLine = currentLine.Split(',');
-                Debug.Assert(kanaLine.Length == 3);
+                currentLine = kanaCsvStrings[i];
+                if (currentLine != null)
+                {
+                    var kanaLine = currentLine.Split(',');
+                    Debug.Assert(kanaLine.Length == 3);
 
-                var newKana = new Kana(
-                    kanaLine[0].ToCharArray()[0],
-                    kanaLine[1],
-                    kanaLine[2]
-                    );
+                    var newKana = new Kana(
+                        kanaLine[0].ToCharArray()[0],
+                        kanaLine[1],
+                        kanaLine[2]
+                        );
 
-                kanaData.Add(newKana);
+                    kanaData.Add(newKana);
+                }
+            }
+            // Store in database
+            kanaDictionary = new Dictionary<char, Kana>();
+            foreach (Kana kana in kanaData)
+            {
+                kanaDictionary.Add(kana.Character, kana);
             }
         }
-
-        // Store in database
-        kanaDictionary = new Dictionary<char, Kana>();
-        foreach (Kana kana in kanaData)
-        {
-            kanaDictionary.Add(kana.Character, kana);
-        }
     }
-
     public Kana RetrieveKana(char kanaCharacter)
     {
         if (kanaDictionary.ContainsKey(kanaCharacter))
